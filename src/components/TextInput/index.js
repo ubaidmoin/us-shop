@@ -42,7 +42,8 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     width: '100%',
     marginBottom: 10,
-    color: '#181c32'
+    color: '#181c32',
+    fontFamily: 'Poppins-Regular'
   },
   textInput: {
     padding: 20,
@@ -57,7 +58,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 13,
-    elevation: 5
+    elevation: 5,
+    fontFamily: 'Poppins-Regular'
   },
   row: {
     flexDirection: 'row',

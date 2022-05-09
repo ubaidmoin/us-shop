@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Register, Login, ResetPassword } from '../screens';
+import { Register, Login, ResetPassword, Welcome } from 'src/screens';
 import { NavigationContainer } from '@react-navigation/native';
-import { StateProvider, useStateValue } from '../services/state/State';
-import { reducer, actions } from '../services/state/Reducer';
-import { initialState } from '../services/state/InitialState';
-import { getUserInfo } from '../services/DataManager';
+import { StateProvider, useStateValue } from 'src/services/state/State';
+import { reducer, actions } from 'src/services/state/Reducer';
+import { initialState } from 'src/services/state/InitialState';
+import { getUserInfo } from 'src/services/DataManager';
 
 const Stack = createStackNavigator();
 
@@ -20,14 +20,11 @@ const Navigator = ({ initialRoute }) => {
         component={Login}
         options={{ gestureEnabled: false }}
       />
+      <Stack.Screen name="Register" component={Register} />
+      <Stack.Screen name="ResetPassword" component={ResetPassword} />
       <Stack.Screen
-        name="Register"
-        component={Register}
-        options={{ gestureEnabled: false }}
-      />
-      <Stack.Screen
-        name="ResetPassword"
-        component={ResetPassword}
+        name="Welcome"
+        component={Welcome}
         options={{ gestureEnabled: false }}
       />
     </Stack.Navigator>

@@ -3,16 +3,17 @@ import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 const TextButton = ({ label, onPress }) => (
   <TouchableOpacity style={styles.touchable} onPress={onPress}>
-    <Text style={[styles.label, { fontWeight: 'normal' }]}>{label}</Text>
+    <Text style={styles.label}>{label}</Text>
   </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
   label: {
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: 'normal',
     marginBottom: 10,
-    color: '#3699ff'
+    color: '#3699ff',
+    fontFamily: 'Poppins-Regular'
   },
   touchable: {
     marginLeft: 5
