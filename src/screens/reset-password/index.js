@@ -1,17 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  ImageBackground,
-  Platform,
-  TouchableOpacity
-} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Image, Platform } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
-import { useStateValue } from '../../services/state/State';
-import { TextInput, TextButton, Button } from '../../components';
+import { useStateValue } from 'src/services/state/State';
+import { TextInput, TextButton, Button } from 'src/components';
 
 const ResetPassword = () => {
   const navigation = useNavigation();
@@ -25,7 +17,7 @@ const ResetPassword = () => {
       style={styles.container}
       contentContainerStyle={styles.contentContainer}>
       <Image
-        source={require('../../assets/images/logo-main.png')}
+        source={require('src/assets/images/logo-main.png')}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -43,7 +35,7 @@ const ResetPassword = () => {
         />
       </View>
       <Image
-        source={require('../../assets/images/feature.png')}
+        source={require('src/assets/images/feature.png')}
         style={styles.feature}
         resizeMode="contain"
       />

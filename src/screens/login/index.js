@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   Image,
   ImageBackground,
   Platform,
@@ -10,8 +9,8 @@ import {
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
-import { useStateValue } from '../../services/state/State';
-import { TextInput, TextButton, Button } from '../../components';
+import { useStateValue } from 'src/services/state/State';
+import { TextInput, TextButton, Button, Text } from 'src/components';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -43,7 +42,10 @@ const Login = () => {
           forgotPasswordLabel="Forgot Password?"
           forgotPasswordOnPress={() => navigation.navigate('ResetPassword')}
         />
-        <Button label="Sign In" />
+        <Button
+          label="Sign In"
+          onPress={() => navigation.navigate('Welcome')}
+        />
         <View style={styles.footer}>
           <Text style={styles.subHeading}>Don't have an account yet?</Text>
           <TextButton
@@ -94,7 +96,7 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   subHeading: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#b5b5c3',
     fontWeight: '500'
   },

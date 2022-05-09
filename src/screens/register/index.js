@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  ImageBackground,
-  Platform,
-  TouchableOpacity
-} from 'react-native';
+import { StyleSheet, View, Image, Platform } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
-import { useStateValue } from '../../services/state/State';
-import { TextInput, TextButton, Button } from '../../components';
+import { useStateValue } from 'src/services/state/State';
+import { TextButton, Button, Text } from 'src/components';
+import { AccountDetails, PersonalDetails, MailingDetails } from './Steps';
+
+const genders = [
+  { label: 'Male', value: 'm' },
+  { label: 'Female', value: 'f' }
+];
 
 const Register = () => {
   const navigation = useNavigation();
@@ -19,29 +17,77 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [active, setActive] = useState(0);
+
+  const handleNext = () => setActive(active + 1);
+  const handlePrevious = () => setActive(active - 1);
+
+  const handleSubmit = () => {
+    navigation.navigate('Login');
+  };
 
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}>
       <Image
-        source={require('../../assets/images/logo-main.png')}
+        source={require('src/assets/images/logo-main.png')}
         style={styles.logo}
         resizeMode="contain"
       />
       <View style={styles.body}>
-        <TextInput
-          label="Email"
-          placeholder="Email"
-          keyboardType="email-address"
+        <View style={styles.row}>
+          <View style={styles.step}>
+            <View
+              style={
+                active === 0 ? styles.stepNumberActive : styles.stepNumber
+              }>
+              <Text
+                style={active === 0 ? styles.stepTextActive : styles.stepText}>
+                1
+              </Text>
+            </View>
+            <Text style={styles.stepTitle}>Account Setup</Text>
+          </View>
+          <View style={styles.step}>
+            <View
+              style={
+                active === 1 ? styles.stepNumberActive : styles.stepNumber
+              }>
+              <Text
+                style={active === 1 ? styles.stepTextActive : styles.stepText}>
+                2
+              </Text>
+            </View>
+            <Text style={styles.stepTitle}>Personal Details</Text>
+          </View>
+          <View style={styles.step}>
+            <View
+              style={
+                active === 2 ? styles.stepNumberActive : styles.stepNumber
+              }>
+              <Text
+                style={active === 2 ? styles.stepTextActive : styles.stepText}>
+                3
+              </Text>
+            </View>
+            <Text style={styles.stepTitle}>Mailing Address</Text>
+          </View>
+        </View>
+        {active === 0 ? (
+          <AccountDetails />
+        ) : active === 1 ? (
+          <PersonalDetails radioOptions={genders} />
+        ) : (
+          <MailingDetails />
+        )}
+        <Button
+          label={active === 2 ? 'Submit' : 'Next'}
+          onPress={active === 2 ? handleSubmit : handleNext}
         />
-        <TextInput label="Password" placeholder="Password" secureTextEntry />
-        <TextInput
-          label="Confirm Password"
-          placeholder="Confirm Password"
-          secureTextEntry
-        />
-        <Button label="Sign In" />
+        {active !== 0 && (
+          <Button label="Previous" onPress={handlePrevious} fill={false} />
+        )}
         <View style={styles.footer}>
           <Text style={styles.subHeading}>Already have an account?</Text>
           <TextButton
@@ -51,7 +97,7 @@ const Register = () => {
         </View>
       </View>
       <Image
-        source={require('../../assets/images/feature.png')}
+        source={require('src/assets/images/feature.png')}
         style={styles.feature}
         resizeMode="contain"
       />
@@ -71,7 +117,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   body: {
-    paddingTop: 60,
+    paddingTop: 30,
     width: '100%'
   },
   logo: {
@@ -92,7 +138,7 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   subHeading: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#b5b5c3',
     fontWeight: '500'
   },
@@ -108,6 +154,49 @@ const styles = StyleSheet.create({
   forgotPasswordContainer: {
     width: '100%',
     alignItems: 'flex-end'
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 20
+  },
+  step: {
+    width: '33.33%',
+    alignItems: 'center'
+  },
+  stepNumber: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#f3f6f9'
+  },
+  stepNumberActive: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#c9f7f5'
+  },
+  stepText: {
+    fontWeight: 'bold',
+    fontSize: 18
+  },
+  stepTextActive: {
+    fontWeight: '500',
+    fontSize: 16,
+    color: '#1bc5bd'
+  },
+  stepTitle: {
+    fontWeight: '500',
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 10
   }
 });
 

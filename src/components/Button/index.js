@@ -15,7 +15,8 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff'
+    color: '#fff',
+    fontFamily: 'Poppins-Regular'
   },
   touchable: {
     backgroundColor: '#3699ff',
