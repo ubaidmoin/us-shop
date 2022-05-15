@@ -21,7 +21,7 @@ const Welcome = () => {
 
   return (
     <ImageBackground
-      style={{ width: '100%', height: '100%' }}
+      style={styles.background}
       source={require('src/assets/images/background.png')}>
       <View style={styles.container}>
         <Image
@@ -37,7 +37,10 @@ const Welcome = () => {
             type="warning"
             message="Payment methods are available based on your preffered currency & country."
           />
-          <Button label="Update" />
+          <Button
+            label="Update"
+            onPress={() => navigation.navigate('Dashboard')}
+          />
         </View>
       </View>
     </ImageBackground>
@@ -51,7 +54,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     alignItems: 'center'
   },
-  contentContainer: {},
+  background: {
+    width: '100%',
+    height: '100%'
+  },
   body: {
     paddingTop: 50,
     width: '100%'

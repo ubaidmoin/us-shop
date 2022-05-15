@@ -1,11 +1,35 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-const Button = ({ label, onPress, fill = true }) => (
+const Button = ({
+  label,
+  customStyle = null,
+  onPress,
+  fill = true,
+  danger = false
+}) => (
   <TouchableOpacity
-    style={[styles.touchable, { backgroundColor: fill ? '#3699ff' : '#fff' }]}
+    style={[
+      styles.touchable,
+      !!customStyle && {
+        paddingVertical: customStyle.paddingVertical,
+        paddingHorizontal: customStyle.paddingHorizontal
+      },
+      !!(typeof customStyle?.marginTop === 'number') && {
+        marginTop: customStyle.marginTop
+      },
+      { backgroundColor: fill ? '#3699ff' : '#fff' },
+      { borderColor: danger ? '#f64e60' : '#3699ff' }
+    ]}
     onPress={onPress}>
-    <Text style={[styles.label, { color: !fill ? '#3699ff' : '#fff' }]}>
+    <Text
+      style={[
+        styles.label,
+        !!customStyle?.fontSize && {
+          fontSize: customStyle.fontSize
+        },
+        { color: danger ? '#f64e60' : !fill ? '#3699ff' : '#fff' }
+      ]}>
       {label}
     </Text>
   </TouchableOpacity>

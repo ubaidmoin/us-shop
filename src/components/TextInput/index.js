@@ -1,6 +1,7 @@
 import React from 'react';
 import { TextInput, StyleSheet, Text, View } from 'react-native';
 import TextButton from '../TextButton';
+import { Label } from 'src/components';
 
 const CustomInput = ({
   label,
@@ -11,7 +12,10 @@ const CustomInput = ({
   secureTextEntry = false,
   isPassword = false,
   forgotPasswordLabel = '',
-  forgotPasswordOnPress = () => {}
+  forgotPasswordOnPress = () => {},
+  multiline = false,
+  numberOfLines = 1,
+  helperMessage = ''
 }) => (
   <>
     {isPassword && (
@@ -23,15 +27,18 @@ const CustomInput = ({
         />
       </View>
     )}
-    {!isPassword && <Text style={styles.label}>{label}</Text>}
+    {!isPassword && <Label label={label} />}
     <TextInput
       placeholder={placeholder}
-      style={styles.textInput}
+      style={multiline ? styles.textarea : styles.textInput}
       keyboardType={keyboardType}
       value={value}
       onChangeText={onChangeText}
       secureTextEntry={secureTextEntry}
+      multiline={multiline}
+      numberOfLines={numberOfLines}
     />
+    {!!helperMessage && <Text style={styles.helper}>{helperMessage}</Text>}
   </>
 );
 
@@ -61,11 +68,36 @@ const styles = StyleSheet.create({
     elevation: 5,
     fontFamily: 'Poppins-Regular'
   },
+  textarea: {
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 13,
+    width: '100%',
+    marginBottom: 15,
+    shadowColor: '#1584F7',
+    shadowOffset: {
+      width: 2,
+      height: 3
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 13,
+    elevation: 5,
+    fontFamily: 'Poppins-Regular',
+    height: 100
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 10
+  },
+  helper: {
+    fontSize: 12,
+    textAlign: 'left',
+    width: '100%',
+    marginBottom: 10,
+    color: '#b5b5c3',
+    fontFamily: 'Poppins-Regular'
   }
 });
 
