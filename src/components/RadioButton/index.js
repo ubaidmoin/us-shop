@@ -1,12 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import { Label } from 'src/components';
 
 const RadioButton = ({
   checked = '',
   setChecked = () => {},
   items = [],
-  label = ''
+  label = '',
+  helperMessage = ''
 }) => {
   const handleCheckedChange = value => {
     setChecked(value);
@@ -14,7 +16,7 @@ const RadioButton = ({
 
   return (
     <>
-      <Text style={styles.label}>{label}</Text>
+      <Label label={label} />
       <View style={styles.container}>
         {items &&
           items.map(item => (
@@ -34,20 +36,12 @@ const RadioButton = ({
             </TouchableOpacity>
           ))}
       </View>
+      {!!helperMessage && <Text style={styles.helper}>{helperMessage}</Text>}
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  label: {
-    fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'left',
-    width: '100%',
-    marginBottom: 10,
-    color: '#181c32',
-    fontFamily: 'Poppins-Regular'
-  },
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -56,11 +50,20 @@ const styles = StyleSheet.create({
   radioButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 10
+    marginRight: 10,
+    marginTop: 5
   },
   radioButtonText: {
     fontSize: 14,
     marginLeft: 10,
+    fontFamily: 'Poppins-Regular'
+  },
+  helper: {
+    fontSize: 12,
+    textAlign: 'left',
+    width: '100%',
+    marginBottom: 10,
+    color: '#b5b5c3',
     fontFamily: 'Poppins-Regular'
   }
 });

@@ -1,15 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-const MessageBox = ({ message = '', type = 'warning' }) => {
+const MessageBox = ({ message = '', type = 'warning', borderRadius = 0 }) => {
   const container =
     type === 'success'
-      ? styles.success
+      ? [styles.success, { borderRadius: borderRadius }]
       : type === 'warning'
-      ? styles.warning
+      ? [styles.warning, { borderRadius: borderRadius }]
       : type === 'info'
-      ? styles.info
-      : styles.danger;
+      ? [styles.info, { borderRadius: borderRadius }]
+      : [styles.danger, { borderRadius: borderRadius }];
   return (
     <View style={container}>
       <Text style={styles.message}>{message}</Text>

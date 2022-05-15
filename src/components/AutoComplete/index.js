@@ -1,6 +1,7 @@
 import React from 'react';
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Label } from 'src/components';
 
 const AutoComplete = ({
   label = '',
@@ -12,7 +13,7 @@ const AutoComplete = ({
 }) => {
   return (
     <>
-      <Text style={styles.label}>{label}</Text>
+      <Label label={label} />
       <AutocompleteDropdown
         clearOnFocus={false}
         closeOnBlur={true}
@@ -31,15 +32,6 @@ const AutoComplete = ({
 };
 
 const styles = StyleSheet.create({
-  label: {
-    fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'left',
-    width: '100%',
-    marginBottom: 10,
-    color: '#181c32',
-    fontFamily: 'Poppins-Regular'
-  },
   autoComplete: {
     padding: 10,
     backgroundColor: '#fff',

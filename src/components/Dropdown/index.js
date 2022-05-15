@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { Label } from 'src/components';
 
 const Dropdown = ({
   label = '',
@@ -13,7 +14,7 @@ const Dropdown = ({
 }) => {
   return (
     <>
-      <Text style={styles.label}>{label}</Text>
+      <Label label={label} />
       <DropDownPicker
         open={visible}
         value={selectedItem}
@@ -30,15 +31,6 @@ const Dropdown = ({
 };
 
 const styles = StyleSheet.create({
-  label: {
-    fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'left',
-    width: '100%',
-    marginBottom: 10,
-    color: '#181c32',
-    fontFamily: 'Poppins-Regular'
-  },
   placeholder: {
     fontSize: 15,
     color: '#c4c4c6',
