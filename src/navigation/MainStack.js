@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Register, Login, ResetPassword, Welcome } from 'src/screens';
+import { Register, Login, ResetPassword, Welcome, Splash } from 'src/screens';
 import { NavigationContainer } from '@react-navigation/native';
 import { StateProvider, useStateValue } from 'src/services/state/State';
 import { reducer, actions } from 'src/services/state/Reducer';
 import { initialState } from 'src/services/state/InitialState';
 import { getUserInfo } from 'src/services/DataManager';
 import LeftDrawer from './LeftDrawer';
+import { getNotifications } from 'src/services/api/ApiManager';
 
 const Stack = createStackNavigator();
 
 const Navigator = ({ initialRoute }) => {
   return (
-    <Stack.Navigator
-    // initialRouteName={initialRoute}
-    >
+    <Stack.Navigator initialRouteName={initialRoute}>
       <Stack.Screen
         name="Login"
         component={Login}
@@ -51,9 +50,20 @@ const Navigator = ({ initialRoute }) => {
 };
 
 const RootNavigator = () => {
-  const [{ currentUser }, dispatch] = useStateValue();
+  const [{}, dispatch] = useStateValue();
   const [loading, setLoading] = useState(false);
   const [initialRoute, setInitialRoute] = useState('');
+
+  const fetchNotifications = async token => {
+    const response = await getNotifications(token);
+    console.log('getNotifications', response);
+    if (response && response.data) {
+      dispatch({
+        type: actions.SET_NOTIFICATIONS,
+        payload: response?.data?.data
+      });
+    }
+  };
 
   const checkStatus = async () => {
     try {
@@ -67,15 +77,16 @@ const RootNavigator = () => {
         });
         dispatch({
           type: actions.SET_ACCESS_TOKEN,
-          payload: userInfo.access_token
+          payload: userInfo.api_token
         });
-        setInitialRoute('HomeScreen');
+        fetchNotifications(userInfo.api_token);
+        setInitialRoute('Dashboard');
       } else {
         dispatch({
           type: actions.SET_CURRENT_USER,
           payload: ''
         });
-        setInitialRoute('LandingScreen');
+        setInitialRoute('Login');
       }
       setTimeout(() => setLoading(false), 3000);
     } catch (err) {
@@ -84,16 +95,12 @@ const RootNavigator = () => {
   };
 
   useEffect(() => {
-    // checkStatus();
+    checkStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //   return loading ? (
-  //     <Splash.navigator />
-  //   ) : (
-  //     <Navigator initialRoute={initialRoute} />
-  //   );
-  return <Navigator initialRoute={initialRoute} />;
+  return loading ? <Splash /> : <Navigator initialRoute={initialRoute} />;
+  // return <Navigator initialRoute={initialRoute} />;
 };
 
 const MainStack = () => {

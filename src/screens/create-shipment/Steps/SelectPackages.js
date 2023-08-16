@@ -11,9 +11,9 @@ const SelectPackages = ({ data = [], handleCheckChange = () => {} }) => {
             <CheckBox
               key={index}
               checked={item.selected}
-              message={item.tracking_code}
-              messageHighlight={`  Dimension: ${item.size}, Weight: ${item.weight}`}
-              setChecked={value => handleCheckChange(value, index)}
+              message={item?.tracking_id}
+              messageHighlight={`  Dimension: ${item?.package_size}, Weight: ${item?.package_weight}`}
+              setChecked={value => handleCheckChange(value, item?.id)}
             />
           ))}
       </View>

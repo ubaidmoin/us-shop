@@ -11,80 +11,125 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Header, Text, SearchBar, TextHighlight } from 'src/components';
-
-const data = [
-  {
-    id: '366',
-    date: '18-03-2022',
-    amount: '88.80',
-    status: 'Payment Pending'
-  },
-  {
-    id: '366',
-    date: '18-03-2022',
-    amount: '88.80',
-    status: 'Payment Pending'
-  },
-  {
-    id: '366',
-    date: '18-03-2022',
-    amount: '88.80',
-    status: 'Payment Pending'
-  },
-  {
-    id: '366',
-    date: '18-03-2022',
-    amount: '88.80',
-    status: 'Payment Pending'
-  },
-  {
-    id: '366',
-    date: '18-03-2022',
-    amount: '88.80',
-    status: 'Payment Pending'
-  }
-];
+import {
+  Header,
+  Text,
+  SearchBar,
+  TextHighlight,
+  ChangeCountry
+} from 'src/components';
+import { addOnsList } from 'src/services/api/ApiManager';
+import { getPriceByRate, normalizeDate } from 'src/services/constants';
+import { PAYMENT_STATUS } from 'src/services/enums';
 
 const AddOns = () => {
+  const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [{ accessToken, currencyRate, shop }, dispatch] = useStateValue();
   const [loading, setLoading] = useState(false);
+  const [list, setList] = useState([]);
+  const [searchParam, setSearchParam] = useState('');
+  const [addOns, setAddOns] = useState([]);
+
+  const handleGetAddOns = async () => {
+    setLoading(true);
+    const response = await addOnsList(accessToken);
+    console.log(response.data);
+    if (response.status === 200) {
+      setList(response?.data?.data);
+      setAddOns(response?.data?.data);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      handleGetAddOns();
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
+    handleGetAddOns();
+  }, [shop]);
+
+  const handleSearch = search => {
+    if (search === '') {
+      setSearchParam('');
+      setList(addOns);
+    } else {
+      let _data = list && list.length === 0 ? addOns : [...list];
+      console.log(_data);
+      _data = _data.filter(
+        item =>
+          item.id.toString().includes(search) ||
+          item.created_at
+            .toString()
+            .toLowerCase()
+            .includes(search.toLowerCase()) ||
+          item.total_fees
+            .toString()
+            .toLowerCase()
+            .includes(search.toLowerCase())
+      );
+      setAddOns(_data);
+      setSearchParam(search);
+    }
+  };
 
   return (
     <>
       <Header />
       <View style={styles.container}>
-        <SearchBar />
+        <ChangeCountry />
+        <SearchBar
+          value={searchParam}
+          onChangeText={value => handleSearch(value)}
+        />
         <FlatList
-          data={data}
+          data={addOns}
           style={styles.flatlist}
           renderItem={({ item, index }) => (
-            <View style={styles.card}>
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() =>
+                navigation.navigate('AddOnsDetails', {
+                  id: item?.id
+                })
+              }>
               <View style={styles.row}>
                 <Text style={styles.heading}>ID: </Text>
-                <Text style={styles.subHeading}>{item.id}</Text>
+                <Text style={styles.subHeading}>{item?.id}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Date: </Text>
-                <Text style={styles.subHeading}>{item.date}</Text>
+                <Text style={styles.subHeading}>
+                  {normalizeDate(item?.created_at)}
+                </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Amount (MYR): </Text>
-                <Text style={styles.cost}>{item.amount}</Text>
+                <Text style={styles.heading}>
+                  Amount ({currencyRate?.currency_code}):{' '}
+                </Text>
+                <Text style={styles.cost}>
+                  {getPriceByRate(
+                    item?.total_fees,
+                    currencyRate?.currency_rate
+                  )}
+                </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.heading}>Payment: </Text>
+                <TextHighlight error={PAYMENT_STATUS[item?.payment_status]}>
+                  {PAYMENT_STATUS[item?.payment_status]}
+                </TextHighlight>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Status: </Text>
-                <TextHighlight
-                  error={item.status.toLowerCase() === 'payment pending'}>
-                  {item.status}
-                </TextHighlight>
+                <TextHighlight>{'Processing'}</TextHighlight>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
         <TouchableOpacity

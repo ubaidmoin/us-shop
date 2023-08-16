@@ -13,105 +13,124 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Header, Text, SearchBar, TextHighlight } from 'src/components';
-
-const data = [
-  {
-    date: '18-03-2022',
-    shopping_date: '18-03-2022',
-    shopping_time: '10:25',
-    hours: '5',
-    miles: '25',
-    total_cost: '1221.00',
-    status: 'Approval Pending'
-  },
-  {
-    date: '18-03-2022',
-    shopping_date: '18-03-2022',
-    shopping_time: '10:25',
-    hours: '5',
-    miles: '25',
-    total_cost: '1221.00',
-    status: 'Approval Pending'
-  },
-  {
-    date: '18-03-2022',
-    shopping_date: '18-03-2022',
-    shopping_time: '10:25',
-    hours: '5',
-    miles: '25',
-    total_cost: '1221.00',
-    status: 'Approval Pending'
-  },
-  {
-    date: '18-03-2022',
-    shopping_date: '18-03-2022',
-    shopping_time: '10:25',
-    hours: '5',
-    miles: '25',
-    total_cost: '1221.00',
-    status: 'Approval Pending'
-  },
-  {
-    date: '18-03-2022',
-    shopping_date: '18-03-2022',
-    shopping_time: '10:25',
-    hours: '5',
-    miles: '25',
-    total_cost: '1221.00',
-    status: 'Approval Pending'
-  }
-];
+import {
+  Header,
+  Text,
+  SearchBar,
+  TextHighlight,
+  ChangeCountry
+} from 'src/components';
+import { vipServices } from 'src/services/api/ApiManager';
+import { getPriceByRate, normalizeDate } from 'src/services/constants';
+import { PAYMENT_STATUS } from 'src/services/enums';
 
 const BookVIPService = () => {
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [{ accessToken, currencyRate, shop }, dispatch] = useStateValue();
   const [loading, setLoading] = useState(false);
+  const [list, setList] = useState([]);
+  const [services, setServices] = useState([]);
+  const [searchParam, setSearchParam] = useState('');
+
+  const handleGetVipServices = async () => {
+    setLoading(true);
+    const response = await vipServices(accessToken);
+    console.log(response.data);
+    if (response.status === 200) {
+      setList(response?.data?.data);
+      setServices(response?.data?.data);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    handleGetVipServices();
+  }, [shop]);
+
+  const handleSearch = search => {
+    if (search === '') {
+      setSearchParam('');
+      setList(services);
+    } else {
+      let _data = list && list.length === 0 ? services : [...list];
+      _data = _data.filter(
+        item =>
+          item.created_at.toLowerCase().includes(search.toLowerCase()) ||
+          item.service_date.toLowerCase().includes(search.toLowerCase()) ||
+          item.total_hours
+            ?.toString()
+            .toLowerCase()
+            .includes(search.toLowerCase()) ||
+          item.total_miles
+            ?.toString()
+            .toLowerCase()
+            .includes(search.toLowerCase())
+      );
+      setServices(_data);
+      setSearchParam(search);
+    }
+  };
 
   return (
     <>
       <Header />
       <View style={styles.container}>
-        <SearchBar />
+        <ChangeCountry />
+        <SearchBar
+          value={searchParam}
+          onChangeText={value => handleSearch(value)}
+        />
         <FlatList
-          data={data}
+          data={services}
           style={styles.flatlist}
           renderItem={({ item, index }) => (
-            <View style={styles.card}>
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() =>
+                navigation.navigate('BookVIPServiceDetails', {
+                  id: item.id
+                })
+              }>
               <View style={styles.row}>
                 <Text style={styles.heading}>Date: </Text>
-                <Text style={styles.subHeading}>{item.date}</Text>
+                <Text style={styles.subHeading}>
+                  {normalizeDate(item?.created_at)}
+                </Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Shopping Date: </Text>
-                <Text style={styles.subHeading}>{item.shopping_date}</Text>
+                <Text style={styles.subHeading}>
+                  {normalizeDate(item?.service_date)}
+                </Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Shopping Time: </Text>
-                <Text style={styles.cost}>{item.shopping_time}</Text>
+                <Text style={styles.cost}>{item?.service_time}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Hours: </Text>
-                <Text style={styles.subHeading}>{item.hours}</Text>
+                <Text style={styles.subHeading}>{item?.total_hours}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Miles: </Text>
-                <Text style={styles.cost}>{item.miles}</Text>
+                <Text style={styles.cost}>{item?.total_miles}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Total Cost (MYR): </Text>
-                <Text style={styles.cost}>{item.total_cost}</Text>
+                <Text style={styles.heading}>
+                  {`Total Cost (${currencyRate?.currency_code}):`}{' '}
+                </Text>
+                <Text style={styles.cost}>{`${getPriceByRate(
+                  item?.total_fees,
+                  currencyRate?.currency_rate
+                )?.toFixed(2)}`}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Status: </Text>
-                <TextHighlight
-                  error={item.status.toLowerCase() === 'approval pending'}>
-                  {item.status}
+                <TextHighlight error={PAYMENT_STATUS[item?.payment_status]}>
+                  {PAYMENT_STATUS[item?.payment_status]}
                 </TextHighlight>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
         <TouchableOpacity

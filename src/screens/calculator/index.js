@@ -13,13 +13,85 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
 import { Header, Button, TextInput, Dropdown, Text } from 'src/components';
+import { calculatorResult, getCountries } from 'src/services/api/ApiManager';
+import {
+  SHIPPING_LENGTH_UNIT_ENUM,
+  SHIPPING_TYPE_ENUM,
+  SHIPPING_UNIT_ENUM
+} from 'src/services/enums';
+import { getPriceByRate } from 'src/services/constants';
+import { actions } from 'react-native-pell-rich-editor';
 
 const Calculator = () => {
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [{ currencyRate, accessToken, currentUser, countries }, dispatch] =
+    useStateValue();
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [state, setState] = useState({
+    weight: '',
+    length: '',
+    width: '',
+    height: ''
+  });
+  const [openCountry, setOpenCountry] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [shippingCountry, setShippingCountry] = useState(null);
+  const [openShippingCountry, setOpenShippingCountry] = useState(false);
+  const [openUnit, setOpenUnit] = useState(false);
+  const [selectedUnit, setSelectedUnit] = useState(null);
+  const [openLengthUnit, setOpenLengthUnit] = useState(false);
+  const [selectedLengthUnit, setSelectedLengthUnit] = useState(null);
+  const handleStateChange = (key, value) => {
+    setState({ ...state, [key]: value });
+  };
+
+  const fetchCountries = async () => {
+    const res = await getCountries(accessToken);
+    if (res && res.data) {
+      dispatch({
+        type: actions.SET_CURRENCY_RATE,
+        payload: res?.data?.find(c => c.id === currentUser?.currency)
+      });
+      dispatch({
+        type: actions.SET_COUNTRIES,
+        payload: res?.data?.sort((a, b) => a.name.localeCompare(b.name))
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (countries?.length === 0) {
+      fetchCountries();
+    }
+  }, []);
+
+  const handleCalculate = async () => {
+    setLoading(true);
+    console.log(
+      state,
+      shippingCountry,
+      selectedCountry,
+      selectedUnit,
+      selectedLengthUnit
+    );
+    const response = await calculatorResult(accessToken, {
+      shop_country: 18,
+      shipment_country: selectedCountry,
+      shipment_type: shippingCountry,
+      weight: parseInt(state?.weight, 0),
+      weight_type: selectedUnit,
+      length: parseInt(state?.length, 0),
+      width: parseInt(state?.width, 0),
+      height: parseInt(state?.height, 0),
+      size_type: selectedLengthUnit
+    });
+    console.log(response.data);
+    if (response.status === 200) {
+      setResult(response?.data);
+    }
+    setLoading(false);
+  };
 
   return (
     <>
@@ -30,37 +102,119 @@ const Calculator = () => {
         <View style={styles.body}>
           <View style={styles.estimatedContainer}>
             <Text style={styles.estimatedText}>Estimated Cost:</Text>
-            <View style={styles.costContainer}>
-              <Text style={styles.cost}>371.6</Text>
-            </View>
+            {result &&
+              result?.cost &&
+              result?.cost?.length > 0 &&
+              result?.cost?.map(item => (
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>{item?.name}</Text>
+                  <View style={styles.costContainer}>
+                    <Text style={styles.cost}>{`${
+                      currencyRate?.currency_code
+                    } ${getPriceByRate(
+                      item?.cost,
+                      currencyRate?.currency_rate
+                    ).toFixed(2)}`}</Text>
+                  </View>
+                </View>
+              ))}
           </View>
-          <Dropdown label="Country" placeholder="Country" />
-          <Dropdown label="Shipping Type" placeholder="Shipping Type" />
+          <Dropdown
+            label="Country"
+            placeholder="Country"
+            items={countries?.map(item => ({
+              value: item?.id,
+              label: item?.name
+            }))}
+            visible={openCountry}
+            setOpen={() => setOpenCountry(!openCountry)}
+            selectedItem={selectedCountry}
+            setSelectedItem={value => setSelectedCountry(value)}
+            style={{ zIndex: 2000 }}
+          />
+          <Dropdown
+            label="Shipping Type"
+            placeholder="Shipping Type"
+            visible={openShippingCountry}
+            setOpen={() => setOpenShippingCountry(!openShippingCountry)}
+            items={SHIPPING_TYPE_ENUM}
+            selectedItem={shippingCountry}
+            setSelectedItem={value => setShippingCountry(value)}
+            style={{ zIndex: 1900 }}
+          />
           <View style={styles.row}>
             <View style={styles.column}>
-              <TextInput label="Weight" placeholder="" />
+              <TextInput
+                label="Weight"
+                placeholder=""
+                value={state.weight}
+                onChangeText={value => handleStateChange('weight', value)}
+                keyboardType="number-pad"
+              />
             </View>
-            <View style={styles.column}>
-              <Dropdown label="Type" placeholder="Type" />
+            <View style={[styles.column, { zIndex: 20 }]}>
+              <Dropdown
+                label="Type"
+                placeholder="Type"
+                visible={openUnit}
+                setOpen={() => setOpenUnit(!openUnit)}
+                items={SHIPPING_UNIT_ENUM}
+                selectedItem={selectedUnit}
+                setSelectedItem={value => setSelectedUnit(value)}
+                style={{ zIndex: 20 }}
+              />
             </View>
           </View>
           <View style={styles.row}>
             <View style={styles.column}>
-              <TextInput label="Length" placeholder="" />
+              <TextInput
+                label="Length"
+                placeholder=""
+                value={state.length}
+                onChangeText={value => handleStateChange('length', value)}
+                keyboardType="number-pad"
+              />
             </View>
-            <View style={styles.column}>
-              <TextInput label="Width" placeholder="" />
+            <View style={[styles.column, { zIndex: 1 }]}>
+              <TextInput
+                label="Width"
+                placeholder=""
+                value={state.width}
+                onChangeText={value => handleStateChange('width', value)}
+                keyboardType="number-pad"
+              />
             </View>
           </View>
           <View style={styles.row}>
             <View style={styles.column}>
-              <TextInput label="Height" placeholder="" />
+              <TextInput
+                label="Height"
+                placeholder=""
+                value={state.height}
+                onChangeText={value => handleStateChange('height', value)}
+                keyboardType="number-pad"
+              />
             </View>
             <View style={styles.column}>
-              <Dropdown label="Type" placeholder="Type" />
+              <Dropdown
+                label="Type"
+                placeholder="Type"
+                visible={openLengthUnit}
+                setOpen={() => setOpenLengthUnit(!openLengthUnit)}
+                items={SHIPPING_LENGTH_UNIT_ENUM}
+                selectedItem={selectedLengthUnit}
+                setSelectedItem={value => setSelectedLengthUnit(value)}
+                style={{ zIndex: 20 }}
+              />
             </View>
           </View>
-          <Button label="Calculate" onPress={() => {}} />
+          <View style={{ marginBottom: 20 }}>
+            <Button
+              loading={loading}
+              label="Calculate"
+              onPress={handleCalculate}
+            />
+          </View>
         </View>
       </ScrollView>
     </>
@@ -72,14 +226,16 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 20,
     paddingHorizontal: 20,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    zIndex: 1
   },
   contentContainer: {
     alignItems: 'center'
   },
   body: {
     paddingTop: 20,
-    width: '100%'
+    width: '100%',
+    zIndex: 0
   },
   flatlist: {
     width: '100%'
@@ -106,14 +262,16 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '35%'
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    padding: 5
+    padding: 5,
+    marginTop: 10
+    // zIndex: 1
   },
   left: {
     width: '58%'
@@ -122,7 +280,8 @@ const styles = StyleSheet.create({
     width: '40%'
   },
   column: {
-    width: '49%'
+    width: '49%',
+    zIndex: 1
   },
   estimatedContainer: {
     backgroundColor: '#fff',
@@ -149,8 +308,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginTop: 10,
-    width: 100,
+    width: 200,
     alignItems: 'center'
   },
   cost: {

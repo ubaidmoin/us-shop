@@ -12,14 +12,36 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Button, Text, Header } from 'src/components';
+import { Button, Text, Header, ChangeCountry } from 'src/components';
+import { formatPhoneNumber } from 'src/services/DataManager';
+import { getCountries } from 'src/services/api/ApiManager';
+import { actions } from 'src/services/state/Reducer';
 
 const Dashboard = () => {
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
+  const [{ currentUser, accessToken }, dispatch] = useStateValue();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const fetchCountries = async () => {
+    const res = await getCountries(accessToken);
+    if (res && res.data) {
+      dispatch({
+        type: actions.SET_CURRENCY_RATE,
+        payload: res?.data?.find(c => c.id === currentUser?.currency)
+      });
+      dispatch({
+        type: actions.SET_COUNTRIES,
+        payload: res?.data?.sort((a, b) => a.name.localeCompare(b.name))
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchCountries();
+  }, []);
+  console.log('currentUser', currentUser);
 
   return (
     <>
@@ -27,6 +49,7 @@ const Dashboard = () => {
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}>
+        <ChangeCountry />
         <View style={styles.info}>
           <Text style={styles.heading}>State Tax Free Address</Text>
           <Text style={styles.text}>
@@ -34,17 +57,36 @@ const Dashboard = () => {
             from the USA & we will do the shipping for you.
           </Text>
           <Text style={styles.subHeading}>Name</Text>
-          <Text style={styles.subText}>Ubaid Ullah</Text>
+          <Text style={styles.subText}>
+            {(currentUser && currentUser?.name) || ''}
+          </Text>
           <Text style={styles.subHeading}>Address Line 1</Text>
-          <Text style={styles.subText}>41 Oakview Dr</Text>
+          <Text style={styles.subText}>
+            {(currentUser && currentUser?.street_address) || ''}
+          </Text>
           <Text style={styles.subHeading}>Address Line 2</Text>
-          <Text style={styles.subText}>Unit 64658</Text>
+          <Text style={styles.subText}>
+            {(currentUser &&
+              currentUser?.street_address &&
+              currentUser?.street_address.split(',') &&
+              currentUser?.street_address.split(',').length > 1 &&
+              currentUser?.street_address.split(',')[1]) ||
+              ''}
+          </Text>
           <Text style={styles.subHeading}>City, State, Zip Code</Text>
-          <Text style={styles.subText}>Newark, DE, 19172</Text>
+          <Text style={styles.subText}>{`${
+            (currentUser && currentUser?.city) || ''
+          }, ${(currentUser && currentUser?.state) || ''}, ${
+            (currentUser && currentUser?.country) || ''
+          }`}</Text>
           <Text style={styles.subHeading}>Phone</Text>
-          <Text style={styles.subText}>+1 (603) 451-5014</Text>
+          <Text style={styles.subText}>{`${
+            (currentUser && currentUser?.lscode) || ''
+          } ${
+            (currentUser && formatPhoneNumber(currentUser?.phone)) || ''
+          }`}</Text>
           <Text style={[styles.heading, { marginTop: 10 }]}>
-            Lock Number: 64658
+            {`Lock Number: ${(currentUser && currentUser?.locker_code) || ''}`}
           </Text>
         </View>
         <View style={styles.accountContainer}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, Platform } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import { Label } from 'src/components';
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
     borderRadius: 13,
-    width: '100%',
+    width: Platform.OS === 'ios' ? '100%' : '97.5%',
     marginBottom: 15,
     shadowColor: '#1584F7',
     shadowOffset: {
@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 13,
-    elevation: 5
+    elevation: 5,
+    marginHorizontal: Platform.OS === 'ios' ? 0 : 5
   },
   placeholder: {
     fontFamily: 'Poppins-Regular'

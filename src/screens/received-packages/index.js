@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,72 +11,96 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Button, Text, SearchBar, TextHighlight } from 'src/components';
-
-const data = [
-  {
-    tracking_id: '123123',
-    received: true,
-    storage: '50 Days',
-    origin: 'Italy',
-    shipped_from: 'US',
-    status: 'Disposed'
-  },
-  {
-    tracking_id: '123123',
-    received: true,
-    storage: '50 Days',
-    origin: 'Italy',
-    shipped_from: 'US',
-    status: 'Added to Shipment'
-  },
-  {
-    tracking_id: '123123',
-    received: true,
-    storage: 'Delivered',
-    origin: 'Italy',
-    shipped_from: 'US',
-    status: 'Processing'
-  },
-  {
-    tracking_id: '123123',
-    received: true,
-    storage: 'Delivered',
-    origin: 'Italy',
-    shipped_from: 'US',
-    status: 'Delivered'
-  },
-  {
-    tracking_id: '123123',
-    received: true,
-    storage: 'Delivered',
-    origin: 'Italy',
-    shipped_from: 'US',
-    status: 'Package Recieved'
-  }
-];
+import {
+  Button,
+  Text,
+  SearchBar,
+  TextHighlight,
+  ChangeCountry
+} from 'src/components';
+import { getReceivedPackages } from 'src/services/api/ApiManager';
+import { PACKAGE_STATUS, SHIPPING_STATUS } from 'src/services/enums';
+import moment from 'moment';
+import { normalizeDate } from 'src/services/constants';
 
 const ReceivedPackages = () => {
+  const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [{ accessToken, shop }, dispatch] = useStateValue();
   const [loading, setLoading] = useState(false);
+  const [list, setList] = useState([]);
+  const [packages, setPackages] = useState([]);
+  const [searchParam, setSearchParam] = useState('');
+
+  const handleGetReceivedPackages = async () => {
+    setLoading(true);
+    const response = await getReceivedPackages(accessToken);
+    if (response.status === 200) {
+      setList(response?.data?.data);
+      setPackages(response?.data?.data);
+    }
+    setLoading(false);
+  };
+
+  const handleSearch = search => {
+    if (search === '') {
+      setSearchParam('');
+      setList([...list]);
+    } else {
+      let _data = list && list.length === 0 ? packages : [...list];
+      _data = _data.filter(
+        item =>
+          item.tracking_id
+            ?.toString()
+            .toLowerCase()
+            .includes(search.toLowerCase()) ||
+          item.recieved_date.toLowerCase().includes(search.toLowerCase()) ||
+          item.origin_address.toLowerCase().includes(search.toLowerCase()) ||
+          item.package_size
+            ?.toString()
+            .toLowerCase()
+            .includes(search.toLowerCase())
+      );
+      setPackages(_data);
+      setSearchParam(search);
+    }
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      handleGetReceivedPackages();
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
+    handleGetReceivedPackages();
+  }, [shop]);
+
+  // const country = useMemo(() => countries?.find(c => c?.id ===), [countries]);
 
   return (
     <View style={styles.container}>
-      <SearchBar />
+      <ChangeCountry />
+      <SearchBar
+        value={searchParam}
+        onChangeText={value => handleSearch(value)}
+      />
       <FlatList
-        data={data}
+        data={packages}
         style={styles.flatlist}
         renderItem={({ item, index }) => (
-          <View
+          <TouchableOpacity
             style={[
               styles.card,
-              { marginBottom: data.length - 1 === index ? 130 : 10 }
-            ]}>
+              { marginBottom: list?.length - 1 === index ? 130 : 10 }
+            ]}
+            onPress={() =>
+              navigation.navigate('ReceivedPackageDetails', {
+                id: item.id
+              })
+            }>
             <View style={styles.row}>
               <Text style={styles.heading}>Tracking ID: </Text>
               <Text style={styles.subHeading}>{item.tracking_id}</Text>
@@ -84,30 +108,30 @@ const ReceivedPackages = () => {
             <View style={styles.row}>
               <Text style={styles.heading}>Received: </Text>
               <Text style={styles.subHeading}>
-                {item.received ? 'YES' : 'NO'}
+                {normalizeDate(item?.recieved_date)}
               </Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.heading}>Storage: </Text>
-              <TextHighlight error={item.storage.toLowerCase() !== 'delivered'}>
-                {item.storage}
+              <TextHighlight>
+                {moment(new Date()).diff(item?.recieved_date, 'days')}
               </TextHighlight>
             </View>
             <View style={styles.row}>
               <Text style={styles.heading}>Origin: </Text>
-              <Text style={styles.subHeading}>{item.origin}</Text>
+              <Text style={styles.subHeading}>{item?.origin_address}</Text>
             </View>
             <View style={styles.row}>
-              <Text style={styles.heading}>Shipped From: </Text>
-              <Text style={styles.subHeading}>{item.shipped_from}</Text>
+              <Text style={styles.heading}>Dimensions (IN): </Text>
+              <Text style={styles.subHeading}>{item?.package_size}</Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.heading}>Status: </Text>
-              <TextHighlight error={item.status.toLowerCase() === 'disposed'}>
-                {item.status}
+              <TextHighlight>
+                {PACKAGE_STATUS[item?.package_status]}
               </TextHighlight>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
       />
       <TouchableOpacity

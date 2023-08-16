@@ -10,8 +10,8 @@ export const getData = async (relativeUrl, token) => {
   const options = {
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: `Token ${token}`
+      Accept: 'application/json'
+      // Authorization: `Token ${token}`
     }
   };
   console.log(url, options);
@@ -45,6 +45,30 @@ export const getDataAnonymously = async relativeUrl => {
   }
 };
 
+export const postDataLogin = async (relativeUrl, data, token) => {
+  const url = relativeUrl;
+  const config = {
+    method: 'post',
+    url,
+    headers: {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+      // Authorization: `Token ${token}`
+    }
+  };
+  if (data) {
+    config.data = JSON.stringify(data);
+  }
+  try {
+    const response = await axios(config)
+      .then(res => res)
+      .catch(error => error);
+    return response;
+  } catch (err) {
+    return { status: null };
+  }
+};
+
 export const postData = async (relativeUrl, data, token) => {
   const url = await getUrl(relativeUrl);
   console.log(url);
@@ -53,14 +77,13 @@ export const postData = async (relativeUrl, data, token) => {
     url,
     headers: {
       Accept: 'application/json, text/plain, */*',
-      'Content-Type': 'application/json',
-      Authorization: `Token ${token}`
+      'Content-Type': 'application/json'
+      // Authorization: `Token ${token}`
     }
   };
   if (data) {
     config.data = JSON.stringify(data);
   }
-  console.log(config);
   try {
     const response = await axios(config)
       .then(res => res)
@@ -95,12 +118,13 @@ export const postDataAnonymously = async (relativeUrl, data) => {
 
 export const postFormData = async (relativeUrl, data) => {
   const url = await getUrl(relativeUrl);
+  console.log('url', url);
   const config = {
     method: 'post',
     url,
     headers: {
       'Content-Type': 'multipart/form-data',
-      Accept: '*/*'
+      Accept: 'application/json, text/plain, */*'
     },
     data
   };

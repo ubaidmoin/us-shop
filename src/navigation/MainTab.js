@@ -5,12 +5,24 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Dashboard } from 'src/screens';
 import { OrdersStack } from './StackNavigations';
 import { NotificationsTab, ShipmentsTab } from './TabNavigations';
+import { Platform, View } from 'react-native';
+import { useStateValue } from 'src/services/state/State';
+import { Text } from 'src/components';
 
 const Tab = createBottomTabNavigator();
 
 const Navigator = () => {
+  const [{ notifications }] = useStateValue();
+
   return (
-    <Tab.Navigator screenOptions={bottomTabOptions}>
+    <Tab.Navigator
+      screenOptions={{
+        ...bottomTabOptions,
+        tabBarStyle: {
+          ...bottomTabOptions.tabBarStyle,
+          margin: Platform.OS === 'ios' ? 20 : 10
+        }
+      }}>
       <Tab.Screen
         name="Dashboard"
         component={Dashboard}
@@ -64,11 +76,31 @@ const Navigator = () => {
           tabBarLabel: 'Notifications',
           header: () => null,
           tabBarIcon: ({ focused }) => (
-            <MaterialIcons
-              name="notifications-active"
-              color={focused ? '#3699ff' : '#494b74'}
-              size={25}
-            />
+            <View>
+              <MaterialIcons
+                name="notifications-active"
+                color={focused ? '#3699ff' : '#494b74'}
+                size={25}
+              />
+              {notifications?.all_count > 0 && (
+                <View
+                  style={{
+                    width: 15,
+                    height: 15,
+                    borderRadius: 7.5,
+                    backgroundColor: 'red',
+                    position: 'absolute',
+                    top: -10,
+                    right: -10,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                  <Text style={{ color: '#fff', fontSize: 11 }}>
+                    {notifications?.all_count}
+                  </Text>
+                </View>
+              )}
+            </View>
           )
         }}
       />
@@ -93,7 +125,7 @@ const bottomTabOptions = {
     position: 'absolute',
     left: 0,
     bottom: 0,
-    elevation: 0,
+    elevation: 10,
     borderTopWidth: 0,
     backgroundColor: '#fff',
     borderRadius: 50,
@@ -107,6 +139,7 @@ const bottomTabOptions = {
     shadowOpacity: 0.1,
     shadowRadius: 13,
     paddingBottom: 15,
-    paddingTop: 10
+    paddingTop: 10,
+    height: 70
   }
 };

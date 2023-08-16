@@ -1,14 +1,16 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { TextInput, RadioButton, AutoComplete } from 'src/components';
-
+import { TextInput, RadioButton, Dropdown } from 'src/components';
+import { countryCodes } from 'src/services/constants';
 const PersonalDetails = ({
   gender = '',
   handleGenderChange = () => {},
   radioOptions = [],
   countries = [],
   selectedCountry = {},
-  setSelectedCountry = () => {}
+  setSelectedCountry = () => {},
+  openCountry = false,
+  setOpenCountry = () => {}
 }) => {
   const navigation = useNavigation();
 
@@ -21,12 +23,16 @@ const PersonalDetails = ({
         setChecked={handleGenderChange}
         items={radioOptions}
       />
-      <AutoComplete
-        label="Country Code"
-        placeholder="Country Code"
-        items={countries}
+      <Dropdown
+        label="Country"
+        placeholder="Country"
+        visible={openCountry}
+        setOpen={() => setOpenCountry(!openCountry)}
+        items={countryCodes}
         selectedItem={selectedCountry}
-        setSelectedItem={setSelectedCountry}
+        setSelectedItem={value => setSelectedCountry(value)}
+        style={{ zIndex: 10 }}
+        searchable
       />
       <TextInput label="Phone Number" placeholder="Phone Number" />
     </>

@@ -23,6 +23,7 @@ export { default as ReceivedPackages } from './received-packages';
 export { default as Register } from './register';
 export { default as ResetPassword } from './reset-password';
 export { default as Shipments } from './shipments';
+export { default as Splash } from './splash';
 export { default as SupportTickets } from './support-tickets';
 export { default as TermsAndConditions } from './terms-and-conditions';
 export { default as Welcome } from './welcome';

@@ -11,13 +11,48 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
 import { TextInput, TextButton, Button, Text } from 'src/components';
+import { login } from 'src/services/api/ApiManager';
+import { setUserInfo } from 'src/services/DataManager';
+import { actions } from 'src/services/state/Reducer';
 
 const Login = () => {
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
+  const [{}, dispatch] = useStateValue();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    if (email === '') {
+      alert('Please enter email');
+    } else if (password === '') {
+      alert('Please enter password');
+    } else {
+      setLoading(true);
+      const res = await login({ email, password });
+      console.log(res);
+      if (res && res.data) {
+        const { welcome_tour } = res.data;
+        await setUserInfo(res.data);
+        dispatch({
+          type: actions.SET_CURRENT_USER,
+          payload: res.data
+        });
+        dispatch({
+          type: actions.SET_ACCESS_TOKEN,
+          payload: res.data.api_token
+        });
+        // if (welcome_tour) {
+        //   navigation.navigate('Welcome');
+        // } else {
+        navigation.navigate('Dashboard');
+        // }
+      } else {
+        alert('Invalid email or password');
+      }
+      setLoading(false);
+    }
+  };
 
   return (
     <ScrollView
@@ -33,23 +68,28 @@ const Login = () => {
           label="Your Email"
           placeholder="Email"
           keyboardType="email-address"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={value => setEmail(value)}
+          autoCorrect={false}
         />
         <TextInput
           label="Password"
           placeholder="Password"
+          value={password}
+          onChangeText={value => setPassword(value)}
           secureTextEntry
           isPassword
           forgotPasswordLabel="Forgot Password?"
           forgotPasswordOnPress={() => navigation.navigate('ResetPassword')}
+          autoCorrect={false}
         />
-        <Button
-          label="Sign In"
-          onPress={() => navigation.navigate('Welcome')}
-        />
+        <Button loading={loading} label="Sign In" onPress={handleSubmit} />
         <View style={styles.footer}>
           <Text style={styles.subHeading}>Don't have an account yet?</Text>
           <TextButton
             label="Sign Up Now"
+            disabled={loading}
             onPress={() => navigation.navigate('Register')}
           />
         </View>

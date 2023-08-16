@@ -35,12 +35,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.us_shop",
+    package = "com.shop.uShopUS",
 )
 
 android_resource(
     name = "res",
-    package = "com.us_shop",
+    package = "com.shop.uShopUS",
     res = "src/main/res",
 )
 

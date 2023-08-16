@@ -15,64 +15,56 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
 import { Button, Text, SearchBar, TextHighlight } from 'src/components';
-
-const data = [
-  {
-    title: 'Test',
-    message: 'Package has been updated 1 month ago'
-  },
-  {
-    title: 'Test',
-    message: 'Package has been updated 1 month ago'
-  },
-  {
-    title: 'Test',
-    message: 'Package has been updated 1 month ago'
-  },
-  {
-    title: 'Test',
-    message: 'Package has been updated 1 month ago'
-  },
-  {
-    title: 'Test',
-    message: 'Package has been updated 1 month ago'
-  },
-  {
-    title: 'Test',
-    message: 'Package has been updated 1 month ago'
-  }
-];
+import { humanDifferenceDate } from 'src/services/constants';
 
 const NotificationsShipments = () => {
-  const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [{ notifications }] = useStateValue();
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={data}
-        style={styles.flatlist}
-        renderItem={({ item, index }) => (
-          <View
-            style={[
-              styles.card,
-              { marginBottom: data.length - 1 === index ? 130 : 10 }
-            ]}>
-            <View style={styles.row}>
-              <View style={styles.icon}>
-                <FontAwesome name="dropbox" color="'#3699ff'" size={25} />
-              </View>
-              <View style={styles.notification}>
-                <Text style={styles.heading}>{item.title}</Text>
-                <Text style={styles.subHeading}>{item.message}</Text>
+      {notifications?.shippments_count > 0 && (
+        <FlatList
+          data={notifications?.shippments_notification || []}
+          style={styles.flatlist}
+          renderItem={({ item, index }) => (
+            <View
+              style={[
+                styles.card,
+                {
+                  marginBottom:
+                    notifications?.shippments_count - 1 === index ? 130 : 10
+                }
+              ]}>
+              <View style={styles.row}>
+                <View style={styles.icon}>
+                  <FontAwesome name="dropbox" color="'#3699ff'" size={25} />
+                </View>
+                <View style={styles.notification}>
+                  <Text style={styles.subHeading}>
+                    {humanDifferenceDate(item?.updated_at)}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-        )}
-      />
+          )}
+        />
+      )}
+      {notifications?.shippments_count === 0 && (
+        <View
+          style={{
+            width: '100%',
+            marginTop: 30,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+          <Text style={{ marginTop: 20, textAlign: 'center' }}>
+            All caught up
+          </Text>
+          <Text style={{ marginTop: 10, textAlign: 'center' }}>
+            No notifications found
+          </Text>
+        </View>
+      )}
     </View>
   );
 };

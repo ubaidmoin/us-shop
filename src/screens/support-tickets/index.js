@@ -13,75 +13,93 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Header, Text, SearchBar, TextHighlight } from 'src/components';
-
-const data = [
-  {
-    ticket_id: '366',
-    date: '18-03-2022',
-    subject: 'Package not recieved',
-    status: 'Resolved'
-  },
-  {
-    ticket_id: '366',
-    date: '18-03-2022',
-    subject: 'Package not recieved',
-    status: 'Resolved'
-  },
-  {
-    ticket_id: '366',
-    date: '18-03-2022',
-    subject: 'Package not recieved',
-    status: 'Resolved'
-  },
-  {
-    ticket_id: '366',
-    date: '18-03-2022',
-    subject: 'Package not recieved',
-    status: 'Resolved'
-  },
-  {
-    ticket_id: '366',
-    date: '18-03-2022',
-    subject: 'Package not recieved',
-    status: 'Resolved'
-  }
-];
+import {
+  Header,
+  Text,
+  SearchBar,
+  TextHighlight,
+  ChangeCountry
+} from 'src/components';
+import { supportTicketsList } from 'src/services/api/ApiManager';
+import { normalizeDate } from 'src/services/constants';
+import { TICKET_STATUS } from 'src/services/enums';
 
 const SupportTickets = () => {
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
+  const [{ accessToken, shop }, dispatch] = useStateValue();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [list, setList] = useState([]);
+  const [searchParam, setSearchParam] = useState('');
+  const [tickets, setTickets] = useState([]);
+
+  const handleGetSupportTickets = async () => {
+    setLoading(true);
+    const response = await supportTicketsList(accessToken);
+    console.log(response.data);
+    if (response.status === 200) {
+      setList(response?.data?.data);
+      setTickets(response?.data?.data);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    handleGetSupportTickets();
+  }, [shop]);
+
+  const handleSearch = search => {
+    if (search === '') {
+      setSearchParam('');
+      setTickets(tickets);
+    } else {
+      let _data = tickets && tickets.length === 0 ? tickets : [...list];
+      _data = _data.filter(
+        item =>
+          item.id?.toString().toLowerCase().includes(search.toLowerCase()) ||
+          item.subject.toLowerCase().includes(search.toLowerCase()) ||
+          item.created_at.toLowerCase().includes(search.toLowerCase())
+      );
+      setTickets(_data);
+      setSearchParam(search);
+    }
+  };
 
   return (
     <>
       <Header />
       <View style={styles.container}>
-        <SearchBar />
+        <ChangeCountry />
+        <SearchBar
+          value={searchParam}
+          onChangeText={value => handleSearch(value)}
+        />
         <FlatList
-          data={data}
+          data={tickets}
           style={styles.flatlist}
           renderItem={({ item, index }) => (
             <View style={styles.card}>
               <View style={styles.row}>
                 <Text style={styles.heading}>Ticket ID: </Text>
-                <Text style={styles.subHeading}>{item.ticket_id}</Text>
+                <Text style={styles.subHeading}>{item?.id}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Subject: </Text>
-                <Text style={styles.subHeading}>{item.subject}</Text>
+                <Text style={styles.subHeading}>{item?.subject}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Status: </Text>
-                <TextHighlight error={item.status.toLowerCase() === 'pending'}>
-                  {item.status}
+                <TextHighlight
+                  error={TICKET_STATUS[item?.status] !== 'Resolved'}>
+                  {TICKET_STATUS[item?.status]}
                 </TextHighlight>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Date: </Text>
-                <Text style={styles.subHeading}>{item.date}</Text>
+                <Text style={styles.subHeading}>
+                  {normalizeDate(item?.created_at)}
+                </Text>
               </View>
             </View>
           )}

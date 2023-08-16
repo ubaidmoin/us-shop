@@ -8,6 +8,9 @@ import Foundation from 'react-native-vector-icons/Foundation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Text, SecondaryButton, Divider } from 'src/components';
+import { useStateValue } from 'src/services/state/State';
+import { actions } from 'src/services/state/Reducer';
+import { removeUserInfo } from 'src/services/DataManager';
 
 const rightDrawerOptions = [
   {
@@ -55,15 +58,25 @@ const rightDrawerOptions = [
 
 const RightDrawerContent = props => {
   const { navigation } = props;
+  const [{ currentUser }, dispatch] = useStateValue();
   const handleCloseDrawer = () => navigation?.toggleDrawer();
   const handleOnPressItem = item => {
     navigation.navigate(item.value);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     navigation.reset({
       index: 0,
       routes: [{ name: 'Login' }]
+    });
+    await removeUserInfo();
+    dispatch({
+      type: actions.SET_CURRENT_USER,
+      payload: undefined
+    });
+    dispatch({
+      type: actions.SET_ACCESS_TOKEN,
+      payload: ''
     });
   };
 
@@ -83,13 +96,21 @@ const RightDrawerContent = props => {
         </View>
         <View style={styles.dpRow}>
           <View style={styles.dp}>
-            <Text style={styles.initial}>U</Text>
+            <Text style={styles.initial}>
+              {currentUser &&
+                currentUser?.name &&
+                currentUser?.name.substring(0, 1)}
+            </Text>
           </View>
           <View style={styles.details}>
-            <Text style={styles.name}>Ubaid Ullah</Text>
+            <Text style={styles.name}>
+              {(currentUser && currentUser?.name) || ''}
+            </Text>
             <View style={styles.emailRow}>
               <Entypo name="mail" color="#3699ff" size={20} />
-              <Text style={styles.email}>Tanwer.ubaid@gmail.com</Text>
+              <Text style={styles.email}>
+                {(currentUser && currentUser?.email) || ''}
+              </Text>
             </View>
             <View style={styles.signout}>
               <SecondaryButton label="Sign Out" onPress={handleLogout} />

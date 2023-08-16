@@ -11,120 +11,157 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Header, Text, SearchBar, TextHighlight } from 'src/components';
-
-const data = [
-  {
-    order_id: '366',
-    date: '18-03-2022',
-    product_price: '666',
-    number_of_websites: '2',
-    fees: '44.40',
-    total_cost: '710.4',
-    payment_scheduled: '100%',
-    status: 'Payment Pending'
-  },
-  {
-    order_id: '366',
-    date: '18-03-2022',
-    product_price: '666',
-    number_of_websites: '2',
-    fees: '44.40',
-    total_cost: '710.4',
-    payment_scheduled: '100%',
-    status: 'Payment Pending'
-  },
-  {
-    order_id: '366',
-    date: '18-03-2022',
-    product_price: '666',
-    number_of_websites: '2',
-    fees: '44.40',
-    total_cost: '710.4',
-    payment_scheduled: '100%',
-    status: 'Payment Pending'
-  },
-  {
-    order_id: '366',
-    date: '18-03-2022',
-    product_price: '666',
-    number_of_websites: '2',
-    fees: '44.40',
-    total_cost: '710.4',
-    payment_scheduled: '100%',
-    status: 'Payment Pending'
-  },
-  {
-    order_id: '366',
-    date: '18-03-2022',
-    product_price: '666',
-    number_of_websites: '2',
-    fees: '44.40',
-    total_cost: '710.4',
-    payment_scheduled: '100%',
-    status: 'Payment Pending'
-  }
-];
+import {
+  Header,
+  Text,
+  SearchBar,
+  TextHighlight,
+  ChangeCountry
+} from 'src/components';
+import { buyForMeList } from 'src/services/api/ApiManager';
+import { getPriceByRate, normalizeDate } from 'src/services/constants';
+import { PAYMENT_STATUS } from 'src/services/enums';
 
 const BuyForMe = () => {
+  const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [{ accessToken, shop }, dispatch] = useStateValue();
   const [loading, setLoading] = useState(false);
+  const [list, setList] = useState([]);
+  const [searchParam, setSearchParam] = useState('');
+  const [buyForMe, setBuyForMe] = useState([]);
+
+  const handleGetBuyForMe = async () => {
+    setLoading(true);
+    try {
+      const response = await buyForMeList(accessToken);
+      console.log(response?.data?.data);
+      if (response.status === 200) {
+        setBuyForMe(response?.data?.data);
+        setList(response?.data?.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      handleGetBuyForMe();
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
+    handleGetBuyForMe();
+  }, [shop]);
+
+  const handleSearch = search => {
+    if (search === '') {
+      setSearchParam('');
+      setList(buyForMe);
+    } else {
+      let _data = list && list.length === 0 ? buyForMe : [...list];
+      _data = _data.filter(
+        item =>
+          item.id?.toString().toLowerCase().includes(search.toLowerCase()) ||
+          item.created_at.toLowerCase().includes(search.toLowerCase()) ||
+          item.total_price
+            ?.toString()
+            .toLowerCase()
+            .includes(search.toLowerCase()) ||
+          item.total_websites
+            ?.toString()
+            .toLowerCase()
+            .includes(search.toLowerCase())
+      );
+      setList(_data);
+      setSearchParam(search);
+    }
+  };
 
   return (
     <>
       <Header />
       <View style={styles.container}>
-        <SearchBar />
+        <ChangeCountry />
+        <SearchBar
+          value={searchParam}
+          onChangeText={value => handleSearch(value)}
+        />
         <FlatList
-          data={data}
+          data={buyForMe}
           style={styles.flatlist}
           renderItem={({ item, index }) => (
-            <View
+            <TouchableOpacity
               style={[
                 styles.card,
-                { marginBottom: data.length - 1 === index ? 130 : 10 }
-              ]}>
+                { marginBottom: buyForMe?.length - 1 === index ? 130 : 10 }
+              ]}
+              onPress={() =>
+                navigation.navigate('BuyForMeDetails', {
+                  id: item?.id
+                })
+              }>
               <View style={styles.row}>
                 <Text style={styles.heading}>Order ID: </Text>
-                <Text style={styles.subHeading}>{item.order_id}</Text>
+                <Text style={styles.subHeading}>{item?.id}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Date: </Text>
-                <Text style={styles.subHeading}>{item.date}</Text>
+                <Text style={styles.subHeading}>
+                  {normalizeDate(item?.created_at)}
+                </Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Product Price: </Text>
-                <Text style={styles.cost}>{item.product_price}</Text>
+                <Text style={styles.cost}>{`${
+                  item?.get_currency?.currency_code
+                } ${getPriceByRate(
+                  item?.total_price,
+                  item?.get_currency?.currency_rate
+                )}`}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Number of Websites: </Text>
-                <Text style={styles.subHeading}>{item.number_of_websites}</Text>
+                <Text style={styles.subHeading}>{item?.total_websites}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Fees: </Text>
-                <Text style={styles.cost}>{item.fees}</Text>
+                <Text style={styles.cost}>{`${
+                  item?.get_currency?.currency_code
+                } ${getPriceByRate(
+                  item?.total_fees,
+                  item?.get_currency?.currency_rate
+                )}`}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Total Cost (MYR): </Text>
-                <Text style={styles.cost}>{item.total_cost}</Text>
+                <Text
+                  style={
+                    styles.heading
+                  }>{`Total Cost (${item?.get_currency?.currency_code}): `}</Text>
+                <Text style={styles.cost}>{`${
+                  item?.get_currency?.currency_code
+                } ${getPriceByRate(
+                  item?.total_fees + item?.total_price,
+                  item?.get_currency?.currency_rate
+                )}`}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Payment Scheduled: </Text>
-                <Text style={styles.cost}>{item.payment_scheduled}</Text>
+                <Text style={styles.cost}>{`${
+                  100 / parseInt(item?.price_schedule, 0)
+                }`}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Status: </Text>
-                <TextHighlight
-                  error={item.status.toLowerCase() === 'payment pending'}>
-                  {item.status}
+                <TextHighlight error={PAYMENT_STATUS[item?.payment_status]}>
+                  {PAYMENT_STATUS[item?.payment_status]}
                 </TextHighlight>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
         <TouchableOpacity

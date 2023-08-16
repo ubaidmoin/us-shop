@@ -4,7 +4,6 @@ import {
   ChangePassword,
   Calculator,
   CreateTicket,
-  Invoices,
   MyProfile,
   SupportTickets,
   TermsAndConditions,
@@ -17,6 +16,7 @@ import LeftDrawer from './LeftDrawer';
 import { AddonStack, VIPOrdersStack } from './StackNavigations';
 import { useStateValue } from 'src/services/state/State';
 import { actions } from 'src/services/state/Reducer';
+import InvoicesStack from './StackNavigations/InvoicesStack';
 
 const Drawer = createDrawerNavigator();
 
@@ -50,7 +50,7 @@ const Navigator = () => {
       <Drawer.Screen name="ChangePassword" component={ChangePassword} />
       <Drawer.Screen name="Calculator" component={Calculator} />
       <Drawer.Screen name="CreateTicket" component={CreateTicket} />
-      <Drawer.Screen name="Invoices" component={Invoices} />
+      <Drawer.Screen name="Invoices" component={InvoicesStack} />
       <Drawer.Screen name="MyProfile" component={MyProfile} />
       <Drawer.Screen name="SupportTickets" component={SupportTickets} />
       <Drawer.Screen name="ProhibitedItems" component={ProhibitedItems} />

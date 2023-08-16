@@ -11,6 +11,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
 import { Dropdown, Button, MessageBox } from 'src/components';
+import { countries } from 'src/services/constants';
 
 const Welcome = () => {
   const navigation = useNavigation();
@@ -18,6 +19,8 @@ const Welcome = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [openCountry, setOpenCountry] = useState(false);
 
   return (
     <ImageBackground
@@ -30,9 +33,27 @@ const Welcome = () => {
           resizeMode="contain"
         />
         <View style={styles.body}>
-          <Dropdown label="Language" placeholder="Language" />
-          <Dropdown label="Country" placeholder="Country" />
-          <Dropdown label="Currency" placeholder="Currency" />
+          <Dropdown
+            label="Language"
+            placeholder="Language"
+            style={{ zIndex: 20 }}
+          />
+          <Dropdown
+            label="Country"
+            placeholder="Country"
+            visible={openCountry}
+            setOpen={() => setOpenCountry(!openCountry)}
+            items={countries}
+            selectedItem={selectedCountry}
+            setSelectedItem={value => setSelectedCountry(value)}
+            style={{ zIndex: 10 }}
+            searchable
+          />
+          <Dropdown
+            label="Currency"
+            placeholder="Currency"
+            style={{ zIndex: 0 }}
+          />
           <MessageBox
             type="warning"
             message="Payment methods are available based on your preffered currency & country."

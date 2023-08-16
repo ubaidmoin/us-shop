@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
 import {
@@ -9,16 +9,28 @@ import {
   RichTextInput,
   DateTimePicker
 } from 'src/components';
+import { createVipServices } from 'src/services/api/ApiManager';
 
 const CreateVIPOrder = () => {
   const navigation = useNavigation();
-  const [{}] = useStateValue();
-  const richText = useRef();
+  const [{ accessToken }] = useStateValue();
+  let richText = useRef();
   const [details, setDetails] = useState('');
   const [date, setDate] = useState(null);
   const [time, setTime] = useState(null);
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [openTimePicker, setOpenTimePicker] = useState(false);
+  const [state, setState] = useState({
+    service_hours: '',
+    service_miles: '',
+    product_detail: '',
+    notes: ''
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleStateChange = (key, value) => {
+    setState({ ...state, [key]: value });
+  };
 
   const handleTimeChange = value => {
     setTime(value);
@@ -28,9 +40,29 @@ const CreateVIPOrder = () => {
     setDate(value);
   };
 
+  const handleCreateVipOrder = async () => {
+    setLoading(true);
+    const order = {
+      ...state,
+      service_hours: parseInt(state.service_hours, 0),
+      service_miles: parseInt(state.service_miles, 0),
+      service_date: date?.toDateString(),
+      service_time: time?.toTimeString(),
+      product_detail: details
+    };
+    console.log('order', order);
+    const res = await createVipServices(accessToken, order);
+    console.log(res.data);
+    if (res && res.data && res.data.data) {
+      Alert.alert('Order successfully created', `${res.data.message}`);
+      navigation.goBack();
+    }
+    setLoading(false);
+  };
+
   return (
     <>
-      <Header />
+      <Header isStack />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}>
@@ -56,11 +88,17 @@ const CreateVIPOrder = () => {
           label="Total hours "
           placeholder=""
           helperMessage="Time required for shopping. 50$ for each hour and minimum one hour is required."
+          value={state.service_hours}
+          onChangeText={value => handleStateChange('service_hours', value)}
+          keyboardType="number-pad"
         />
         <TextInput
           label="Total Miles "
           placeholder=""
           helperMessage="1$ per mile and minimum charges are 15$."
+          value={state.service_miles}
+          onChangeText={value => handleStateChange('service_miles', value)}
+          keyboardType="number-pad"
         />
         <RichTextInput
           value={details}
@@ -75,14 +113,21 @@ const CreateVIPOrder = () => {
           multiline
           numberOfLines={5}
           helperMessage="Please provide the detail of products."
+          value={state.notes}
+          onChangeText={value => handleStateChange('notes', value)}
         />
         <View style={styles.buttonsContainer}>
-          <Button label="Create Order" onPress={() => {}} />
+          <Button
+            loading={loading}
+            label="Create Order"
+            onPress={handleCreateVipOrder}
+          />
           <Button
             label="Cancel"
             onPress={() => navigation.goBack()}
             fill={false}
             danger
+            disabled={loading}
           />
         </View>
       </ScrollView>

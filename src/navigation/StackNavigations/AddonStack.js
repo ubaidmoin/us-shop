@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AddOns, CreateAddon } from 'src/screens';
+import AddOnsDetails from 'src/screens/add-ons/details';
+import { useStateValue } from 'src/services/state/State';
+import { getNotifications } from 'src/services/api/ApiManager';
 
 const Stack = createStackNavigator();
 
@@ -15,6 +18,11 @@ const Navigator = () => {
       <Stack.Screen
         name="CreateAddon"
         component={CreateAddon}
+        options={{ header: () => null }}
+      />
+      <Stack.Screen
+        name="AddOnsDetails"
+        component={AddOnsDetails}
         options={{ header: () => null }}
       />
     </Stack.Navigator>

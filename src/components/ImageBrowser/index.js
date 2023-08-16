@@ -4,27 +4,26 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const ImageBrowser = ({
-  image,
-  setImage,
+  images = [],
+  setImages,
   attachmentTitle = 'Attachments',
   attachmentMessage = 'Please upload image/pdf only less than 5 MB in size.'
 }) => {
   const openImageSelector = () => {
     launchImageLibrary(
       {
-        selectionLimit: 1,
         mediaType: 'mixed',
         quality: 0.6,
         includeBase64: true
       },
       response => {
-        if (response.assets && response.assets[0]) {
-          setImage(response.assets[0]);
+        if (response.assets) {
+          setImages(response.assets);
         }
       }
     );
   };
-  const handleRemoveImage = () => setImage(null);
+  const handleRemoveImage = () => setImages(null);
 
   return (
     <>
@@ -32,17 +31,18 @@ const ImageBrowser = ({
         <Text style={styles.title}>{attachmentTitle}</Text>
         <Text style={styles.message}>{attachmentMessage}</Text>
       </TouchableOpacity>
-      {!!image && (
-        <View style={styles.selectedImage}>
-          <Text style={styles.selectedImageText}>{image.fileName}</Text>
-          <AntDesign
-            name="closecircle"
-            color="red"
-            size={25}
-            onPress={handleRemoveImage}
-          />
-        </View>
-      )}
+      {images?.length > 0 &&
+        images?.map(image => (
+          <View style={styles.selectedImage}>
+            <Text style={styles.selectedImageText}>{image.fileName}</Text>
+            <AntDesign
+              name="closecircle"
+              color="red"
+              size={25}
+              onPress={handleRemoveImage}
+            />
+          </View>
+        ))}
     </>
   );
 };

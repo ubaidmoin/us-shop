@@ -32,7 +32,9 @@ const RadioButton = ({
                 color="#3699ff"
                 size={20}
               />
-              <Text style={styles.radioButtonText}>{item.label}</Text>
+              <Text style={styles.radioButtonText}>
+                {item.label} {item?.description ? item?.description : ''}
+              </Text>
             </TouchableOpacity>
           ))}
       </View>

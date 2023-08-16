@@ -1,78 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  Image,
-  FlatList,
-  ImageBackground,
-  Platform,
-  TouchableOpacity
-} from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import React from 'react';
+import { StyleSheet, View, FlatList } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Button, Text, SearchBar, TextHighlight } from 'src/components';
-
-const data = [
-  {
-    title: 'Test',
-    message: 'Package has been updated 1 month ago'
-  },
-  {
-    title: 'Test',
-    message: 'Package has been updated 1 month ago'
-  },
-  {
-    title: 'Test',
-    message: 'Package has been updated 1 month ago'
-  },
-  {
-    title: 'Test',
-    message: 'Package has been updated 1 month ago'
-  },
-  {
-    title: 'Test',
-    message: 'Package has been updated 1 month ago'
-  },
-  {
-    title: 'Test',
-    message: 'Package has been updated 1 month ago'
-  }
-];
+import { Text } from 'src/components';
+import { humanDifferenceDate, normalizeDate } from 'src/services/constants';
 
 const NotificationsPackages = () => {
-  const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [{ notifications }] = useStateValue();
+
+  console.log('notifications', notifications);
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={data}
-        style={styles.flatlist}
-        renderItem={({ item, index }) => (
-          <View
-            style={[
-              styles.card,
-              { marginBottom: data.length - 1 === index ? 130 : 10 }
-            ]}>
-            <View style={styles.row}>
-              <View style={styles.icon}>
-                <FontAwesome name="dropbox" color="'#3699ff'" size={25} />
-              </View>
-              <View style={styles.notification}>
-                <Text style={styles.heading}>{item.title}</Text>
-                <Text style={styles.subHeading}>{item.message}</Text>
+      {notifications?.packages_count > 0 && (
+        <FlatList
+          data={notifications?.packages_notification || []}
+          style={styles.flatlist}
+          renderItem={({ item, index }) => (
+            <View
+              style={[
+                styles.card,
+                {
+                  marginBottom:
+                    notifications?.packages_count - 1 === index ? 130 : 10
+                }
+              ]}>
+              <View style={styles.row}>
+                <View style={styles.icon}>
+                  <FontAwesome name="dropbox" color="'#3699ff'" size={25} />
+                </View>
+                <View style={styles.notification}>
+                  <Text style={styles.heading}>{item?.tracking_id}</Text>
+                  <Text style={styles.subHeading}>
+                    {humanDifferenceDate(item?.updated_at)}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-        )}
-      />
+          )}
+        />
+      )}
+      {notifications?.packages_count === 0 && (
+        <View
+          style={{
+            width: '100%',
+            marginTop: 30,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+          <Text style={{ marginTop: 20, textAlign: 'center' }}>
+            All caught up
+          </Text>
+          <Text style={{ marginTop: 10, textAlign: 'center' }}>
+            No notifications found
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -102,7 +86,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#fff',
-    width: '100%',
+    width: '95%',
     marginVertical: 10,
     shadowColor: '#1584F7',
     shadowOffset: {
@@ -113,7 +97,8 @@ const styles = StyleSheet.create({
     shadowRadius: 13,
     borderRadius: 13,
     elevation: 5,
-    padding: 10
+    padding: 10,
+    marginHorizontal: 10
   },
   heading: {
     fontSize: 14,

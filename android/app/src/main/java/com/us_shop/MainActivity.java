@@ -1,4 +1,4 @@
-package com.us_shop;
+package com.shop.uShopUS;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

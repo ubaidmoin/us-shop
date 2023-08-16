@@ -4,7 +4,8 @@ import {
   View,
   Modal,
   ScrollView,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Alert
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
@@ -18,25 +19,79 @@ import {
   RadioButton,
   MessageBox
 } from 'src/components';
-import { paymentSchedules } from 'src/services/Settings';
+import { paymentSchedules } from 'src/services/constants';
+import { createBuyForMe, uploadFile } from 'src/services/api/ApiManager';
 
-const CreateOrder = () => {
+const CreateOrder = ({ route }) => {
   const navigation = useNavigation();
-  const [{}] = useStateValue();
-  const richText = useRef();
+  const [{ accessToken }] = useStateValue();
+  let richText = useRef();
   const [details, setDetails] = useState('');
-  const [image, setImage] = useState('');
+  const [image, setImage] = useState([]);
+  const [fileNames, setFileNames] = useState([]);
   const [paymentSchedule, setPaymentSchedule] = useState('');
   const [showTopMessage, setShowTopMessage] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [state, setState] = useState({
+    price: '',
+    total_websites: '',
+    note: ''
+  });
+  const [loading, setLoading] = useState(false);
+
+  const upload = async () => {
+    if (image.length > 0) {
+      const files = [];
+      image.map(async item => {
+        const formData = new FormData();
+        formData.append('file', {
+          uri: item?.uri,
+          type: item?.type,
+          name: item?.fileName
+        });
+        const fileName = await uploadFile(accessToken, formData);
+        console.log('fileName', fileName?.data?.name);
+        files.push(fileName?.data?.name || '');
+      });
+      setFileNames(files);
+    }
+  };
+
+  useEffect(() => {
+    upload();
+  }, [image]);
+
+  const handleStateChange = (key, value) => {
+    setState({ ...state, [key]: value });
+  };
 
   const handlePaymentChange = value => {
     setPaymentSchedule(value);
   };
 
+  const handleCreateOrder = async () => {
+    setLoading(true);
+    const order = {
+      price: state.price,
+      total_websites: parseInt(state.total_websites, 0),
+      file: fileNames || [],
+      price_schedule: paymentSchedule,
+      product_detail: details,
+      notes: state.note
+    };
+    console.log('order', order);
+    const res = await createBuyForMe(accessToken, order);
+    console.log(res);
+    if (res && res.data && res.data.data) {
+      Alert.alert('Order successfully created', `${res.data.message}`);
+      navigation.navigate('BuyForMe');
+    }
+    setLoading(false);
+  };
+
   return (
     <>
-      <Header />
+      <Header isStack />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}>
@@ -49,8 +104,20 @@ const CreateOrder = () => {
             onPress={() => setShowTopMessage(true)}
           />
         </View>
-        <TextInput label="Total Product Price (USD) " placeholder="" />
-        <TextInput label="Number of Website(s) " placeholder="" />
+        <TextInput
+          label="Total Product Price (USD) "
+          placeholder=""
+          value={state.price}
+          onChangeText={value => handleStateChange('price', value)}
+          keyboardType="number-pad"
+        />
+        <TextInput
+          label="Number of Website(s) "
+          placeholder=""
+          value={state.total_websites}
+          onChangeText={value => handleStateChange('total_websites', value)}
+          keyboardType="number-pad"
+        />
         <RadioButton
           label="Product Payment Schedule"
           checked={paymentSchedule}
@@ -69,8 +136,8 @@ const CreateOrder = () => {
           setShowInfo={() => setShowInfo(!showInfo)}
         />
         <ImageBrowser
-          image={image}
-          setImage={setImage}
+          images={image}
+          setImages={setImage}
           attachmentTitle="Screenshot of your Cart/Basket"
           attachmentMessage="Please upload image file only less than 5 MB in size."
         />
@@ -80,14 +147,21 @@ const CreateOrder = () => {
           multiline
           numberOfLines={5}
           helperMessage="Including any coupon code you want to use in the website"
+          value={state.note}
+          onChangeText={value => handleStateChange('note', value)}
         />
         <View style={styles.buttonsContainer}>
-          <Button label="Create Order" onPress={() => {}} />
+          <Button
+            loading={loading}
+            label="Create Order"
+            onPress={handleCreateOrder}
+          />
           <Button
             label="Cancel"
             onPress={() => navigation.goBack()}
             fill={false}
             danger
+            disabled={false}
           />
         </View>
       </ScrollView>

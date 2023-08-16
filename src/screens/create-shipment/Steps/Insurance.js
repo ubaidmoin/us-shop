@@ -1,14 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { RadioButton, MessageBox, TextInput } from 'src/components';
-import { insurance } from 'src/services/Settings';
+import { insurance } from 'src/services/constants';
 
-const Insurance = ({
-  selectedInsurance = -1,
-  handleRadioChange = () => {},
-  _package = '',
-  setPackage = () => {}
-}) => {
+const Insurance = ({ selectedInsurance = 0, handleRadioChange = () => {} }) => {
   return (
     <>
       <RadioButton
@@ -17,13 +12,6 @@ const Insurance = ({
         setChecked={handleRadioChange}
         items={insurance}
       />
-      {selectedInsurance === 0 && (
-        <TextInput
-          label="Selected Package Value (USD)"
-          value={_package}
-          onChangeText={value => setPackage(value)}
-        />
-      )}
       <MessageBox
         message="uShopUS provides insurance coverage to help offer you financial protection against all risks of physical loss or damage of goods/items during transit from uShopUS USA Warehouse to uShopUS Malaysia Warehouse."
         type="success"

@@ -13,11 +13,42 @@ const genders = [
 
 const MyProfile = () => {
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
+  const [{ currentUser, countries }, dispatch] = useStateValue();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(0);
+  const [name, setName] = useState((currentUser && currentUser?.name) || '');
+  const [gender, setGender] = useState(
+    (currentUser && currentUser?.gender === 'Male' ? 'm' : 'f') || ''
+  );
+  const [countryCode, setCountryCode] = useState(
+    (currentUser && currentUser?.lscode) || ''
+  );
+  const [openCountryCode, setOpenCountryCode] = useState(false);
+  const [phone, setPhone] = useState((currentUser && currentUser?.phone) || '');
+  const [company, setCompany] = useState(
+    (currentUser && currentUser?.company) || ''
+  );
+  const [streetAddress, setStreetAddress] = useState(
+    (currentUser && currentUser?.street_address) || ''
+  );
+  const [state, setState] = useState((currentUser && currentUser?.state) || '');
+  const [city, setCity] = useState((currentUser && currentUser?.city) || '');
+  const [postalCode, setPostalCode] = useState(
+    (currentUser && currentUser?.postal_code) || ''
+  );
+  const [country, setCountry] = useState(
+    (currentUser &&
+      countries.find(
+        c => c.name.toLowerCase() === currentUser?.country.toLowerCase()
+      ) &&
+      countries.find(
+        c => c.name.toLowerCase() === currentUser?.country.toLowerCase()
+      ).value) ||
+      ''
+  );
+  const [openCountry, setOpenCountry] = useState(false);
 
   const handleNext = () => setActive(active + 1);
   const handlePrevious = () => setActive(active - 1);
@@ -69,13 +100,44 @@ const MyProfile = () => {
             </View>
           </View>
           {active === 0 ? (
-            <PersonalDetails radioOptions={genders} />
+            <PersonalDetails
+              currentUser={currentUser}
+              name={name}
+              gender={gender}
+              setName={setName}
+              handleGenderChange={value => setGender(value)}
+              radioOptions={genders}
+              countries={countries}
+              selectedCountry={countryCode}
+              setSelectedCountry={setCountryCode}
+              phone={phone}
+              setPhone={setPhone}
+              openCountry={openCountryCode}
+              setOpenCountry={setOpenCountryCode}
+            />
           ) : (
-            <MailingDetails />
+            <MailingDetails
+              currentUser={currentUser}
+              company={company}
+              setCompany={setCompany}
+              streetAddress={streetAddress}
+              setStreetAddress={setStreetAddress}
+              state={state}
+              setState={setState}
+              city={city}
+              setCity={setCity}
+              postalCode={postalCode}
+              setPostalCode={setPostalCode}
+              selectedCountry={country}
+              setSelectedCountry={setCountry}
+              openCountry={openCountry}
+              setOpenCountry={setOpenCountry}
+            />
           )}
           <Button
-            label={active === 2 ? 'Update' : 'Next'}
-            onPress={active === 2 ? handleSubmit : handleNext}
+            label={active === 1 ? 'Update' : 'Next'}
+            onPress={active === 1 ? handleSubmit : handleNext}
+            loading={active === 1 && loading}
           />
         </View>
         <Image

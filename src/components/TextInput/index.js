@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, StyleSheet, Text, View } from 'react-native';
+import { TextInput, StyleSheet, Text, View, Platform } from 'react-native';
 import TextButton from '../TextButton';
 import { Label } from 'src/components';
 
@@ -15,11 +15,14 @@ const CustomInput = ({
   forgotPasswordOnPress = () => {},
   multiline = false,
   numberOfLines = 1,
-  helperMessage = ''
+  helperMessage = '',
+  autoCapitalize = 'words',
+  style = {},
+  autoCorrect = true
 }) => (
   <>
     {isPassword && (
-      <View style={styles.row}>
+      <View style={[styles.row, style && style]}>
         <Text style={[styles.label, { width: '50%' }]}>{label}</Text>
         <TextButton
           label={forgotPasswordLabel}
@@ -37,6 +40,8 @@ const CustomInput = ({
       secureTextEntry={secureTextEntry}
       multiline={multiline}
       numberOfLines={numberOfLines}
+      autoCapitalize={autoCapitalize}
+      autoCorrect={autoCorrect}
     />
     {!!helperMessage && <Text style={styles.helper}>{helperMessage}</Text>}
   </>
@@ -56,23 +61,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
     borderRadius: 13,
-    width: '100%',
-    marginBottom: 15,
-    shadowColor: '#1584F7',
-    shadowOffset: {
-      width: 2,
-      height: 3
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 13,
-    elevation: 5,
-    fontFamily: 'Poppins-Regular'
-  },
-  textarea: {
-    padding: 20,
-    backgroundColor: '#fff',
-    borderRadius: 13,
-    width: '100%',
+    width: Platform.OS === 'ios' ? '100%' : '97.5%',
     marginBottom: 15,
     shadowColor: '#1584F7',
     shadowOffset: {
@@ -83,7 +72,25 @@ const styles = StyleSheet.create({
     shadowRadius: 13,
     elevation: 5,
     fontFamily: 'Poppins-Regular',
-    height: 100
+    marginHorizontal: Platform.OS === 'ios' ? 0 : 5
+  },
+  textarea: {
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 13,
+    width: Platform.OS === 'ios' ? '100%' : '97.5%',
+    marginBottom: 15,
+    shadowColor: '#1584F7',
+    shadowOffset: {
+      width: 2,
+      height: 3
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 13,
+    elevation: 5,
+    fontFamily: 'Poppins-Regular',
+    height: 100,
+    marginHorizontal: Platform.OS === 'ios' ? 0 : 5
   },
   row: {
     flexDirection: 'row',

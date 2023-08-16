@@ -1,32 +1,72 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { TextInput, Dropdown, CheckBox } from 'src/components';
+import { TextInput, Dropdown } from 'src/components';
+import { countries } from 'src/services/constants';
 
 const MailingDetails = ({
   handleCloseCountry = () => {},
-  countries = [],
   handleOpenCountry = () => {},
   isCountryVisible = false,
   selectedCountry = {},
-  setSelectedCountry = () => {}
+  setSelectedCountry = () => {},
+  company = '',
+  setCompany = () => {},
+  streetAddress = '',
+  setStreetAddress = () => {},
+  state = '',
+  setState = () => {},
+  city = '',
+  setCity = () => {},
+  postalCode = '',
+  setPostalCode = () => {},
+  openCountry = false,
+  setOpenCountry = () => {}
 }) => {
   const navigation = useNavigation();
 
   return (
     <>
-      <TextInput label="Business Name (if any)" placeholder="" />
-      <TextInput label="Street Address" placeholder="" />
-      <TextInput label="State" placeholder="" />
-      <TextInput label="City" placeholder="" />
-      <TextInput label="Postal Code" placeholder="" keyboardType="number-pad" />
+      <TextInput
+        label="Business Name (if any)"
+        placeholder=""
+        value={company}
+        onChangeText={value => setCompany(value)}
+      />
+      <TextInput
+        label="Street Address"
+        placeholder=""
+        value={streetAddress}
+        onChangeText={value => setStreetAddress(value)}
+      />
+      <TextInput
+        label="State"
+        placeholder=""
+        value={state}
+        onChangeText={value => setState(value)}
+      />
+      <TextInput
+        label="City"
+        placeholder=""
+        value={city}
+        onChangeText={value => setCity(value)}
+      />
+      <TextInput
+        label="Postal Code"
+        placeholder=""
+        keyboardType="number-pad"
+        value={postalCode}
+        onChangeText={value => setPostalCode(value)}
+      />
       <Dropdown
         label="Country"
         placeholder="Country"
+        visible={openCountry}
+        setOpen={() => setOpenCountry(!openCountry)}
         items={countries}
         selectedItem={selectedCountry}
-        setSelectedItem={setSelectedCountry}
-        setOpen={handleOpenCountry}
-        visible={isCountryVisible}
+        setSelectedItem={value => setSelectedCountry(value)}
+        style={{ zIndex: 10 }}
+        searchable
       />
     </>
   );

@@ -1,6 +1,8 @@
 export { default as AutoComplete } from './AutoComplete';
 export { default as Button } from './Button';
+export { default as ChangeCountry } from './ChangeCountry';
 export { default as CheckBox } from './CheckBox';
+export { default as CountryPicker } from './CountryPicker';
 export { default as DateTimePicker } from './DateTimePicker';
 export { default as Divider } from './Divider';
 export { default as Dropdown } from './Dropdown';
@@ -10,6 +12,8 @@ export { default as Info } from './Info';
 export { default as Label } from './Label';
 export { default as LeftDrawerContent } from './LeftDrawerContent';
 export { default as MessageBox } from './MessageBox';
+export { default as PayNow } from './PayNow';
+export { default as Price } from './Price';
 export { default as RadioButton } from './RadioButton';
 export { default as RightDrawerContent } from './RightDrawerContent';
 export { default as RichTextInput } from './RichTextInput';

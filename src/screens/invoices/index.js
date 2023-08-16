@@ -13,89 +13,102 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Header, Text, SearchBar, TextHighlight } from 'src/components';
-
-const data = [
-  {
-    date: '18-03-2022',
-    title: 'Title ',
-    amount: '88.80',
-    attachment: true,
-    status: 'Payment Pending'
-  },
-  {
-    date: '18-03-2022',
-    title: 'Title ',
-    amount: '88.80',
-    attachment: false,
-    status: 'Payment Pending'
-  },
-  {
-    date: '18-03-2022',
-    title: 'Title ',
-    amount: '88.80',
-    attachment: false,
-    status: 'Payment Pending'
-  },
-  {
-    date: '18-03-2022',
-    title: 'Title ',
-    amount: '88.80',
-    attachment: true,
-    status: 'Payment Pending'
-  },
-  {
-    date: '18-03-2022',
-    title: 'Title ',
-    amount: '88.80',
-    attachment: false,
-    status: 'Payment Pending'
-  }
-];
+import {
+  Header,
+  Text,
+  SearchBar,
+  TextHighlight,
+  ChangeCountry
+} from 'src/components';
+import { invoices } from 'src/services/api/ApiManager';
+import { normalizeDate } from 'src/services/constants';
+import { PAYMENT_STATUS } from 'src/services/enums';
 
 const Invoices = () => {
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
+  const [{ accessToken, currencyRate, shop }, dispatch] = useStateValue();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [list, setList] = useState([]);
+  const [searchParam, setSearchParam] = useState('');
+  const [invoicesList, setInvoices] = useState([]);
+
+  const handleGetSupportTickets = async () => {
+    setLoading(true);
+    const response = await invoices(accessToken);
+    console.log(response.data);
+    if (response.status === 200) {
+      setList(response?.data?.data);
+      setInvoices(response?.data?.data);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    handleGetSupportTickets();
+  }, [shop]);
+
+  const handleSearch = search => {
+    if (search === '') {
+      setSearchParam('');
+      setList(invoicesList);
+    } else {
+      let _data = list && list.length === 0 ? invoicesList : [...list];
+      _data = _data.filter(
+        item =>
+          item.title.toLowerCase().includes(search.toLowerCase()) ||
+          item.created_at.toLowerCase().includes(search.toLowerCase()) ||
+          item.amount?.toString().toLowerCase().includes(search.toLowerCase())
+      );
+      setInvoices(_data);
+      setSearchParam(search);
+    }
+  };
 
   return (
     <>
       <Header />
       <View style={styles.container}>
-        <SearchBar />
+        <ChangeCountry />
+        <SearchBar
+          value={searchParam}
+          onChangeText={value => handleSearch(value)}
+        />
         <FlatList
-          data={data}
+          data={invoicesList}
           style={styles.flatlist}
           renderItem={({ item, index }) => (
-            <View style={styles.card}>
+            <TouchableOpacity style={styles.card}>
               <View style={styles.row}>
                 <Text style={styles.heading}>Date: </Text>
-                <Text style={styles.subHeading}>{item.date}</Text>
+                <Text style={styles.subHeading}>
+                  {normalizeDate(item?.created_at)}
+                </Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Title: </Text>
-                <Text style={styles.subHeading}>{item.title}</Text>
+                <Text style={styles.subHeading}>{item?.title}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Amount (MYR): </Text>
-                <Text style={styles.subHeading}>{item.amount}</Text>
+                <Text style={styles.heading}>
+                  {`Amount (${currencyRate?.currency_code}):`}{' '}
+                </Text>
+                <Text style={styles.subHeading}>{item?.amount}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Attachment: </Text>
                 <Text style={styles.cost}>
-                  {item.attachment ? 'Yes' : 'No'}
+                  {item?.attachments ? 'Yes' : 'No'}
                 </Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.heading}>Status: </Text>
-                <TextHighlight
-                  error={item.status.toLowerCase() === 'payment pending'}>
-                  {item.status}
+                <TextHighlight error={PAYMENT_STATUS[item?.payment_status]}>
+                  {PAYMENT_STATUS[item?.payment_status]}
                 </TextHighlight>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
       </View>

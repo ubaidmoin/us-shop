@@ -7,7 +7,8 @@ import {
   ImageBackground,
   Platform,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -20,23 +21,45 @@ import {
   RichTextInput,
   ImageBrowser
 } from 'src/components';
+import { createSupportTickets } from 'src/services/api/ApiManager';
 
 const CreateTicket = () => {
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
-  const richText = useRef();
+  const [{ accessToken }, dispatch] = useStateValue();
+  let richText = useRef();
   const [details, setDetails] = useState('');
   const [image, setImage] = useState('');
-  const [password, setPassword] = useState('');
+  const [subject, setSubject] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleCreateTicket = async () => {
+    setLoading(true);
+    const data = {
+      support_message: details,
+      file: image,
+      support_subject: subject
+    };
+    const res = await createSupportTickets(accessToken, data);
+    // console.log(res.data);
+    if (res && res.data && res.data.message) {
+      Alert.alert('Ticket successfully created', `${res.data.message}`);
+      navigation.goBack();
+    }
+    setLoading(false);
+  };
 
   return (
     <>
-      <Header />
+      <Header isStack />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}>
-        <TextInput label="Ticket Subject" placeholder="" />
+        <TextInput
+          label="Ticket Subject"
+          placeholder=""
+          value={subject}
+          onChangeText={value => setSubject(value)}
+        />
         <RichTextInput
           value={details}
           label="Message"
@@ -46,12 +69,17 @@ const CreateTicket = () => {
         />
         <ImageBrowser image={image} setImage={setImage} />
         <View style={styles.buttonsContainer}>
-          <Button label="Create Ticket" onPress={() => {}} />
+          <Button
+            loading={loading}
+            label="Create Ticket"
+            onPress={handleCreateTicket}
+          />
           <Button
             label="Cancel"
             onPress={() => navigation.goBack()}
             fill={false}
             danger
+            disabled={loading}
           />
         </View>
       </ScrollView>

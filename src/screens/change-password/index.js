@@ -5,19 +5,53 @@ import {
   Image,
   ImageBackground,
   Platform,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
 import { TextInput, Header, Button, Text } from 'src/components';
+import { updatePassword } from 'src/services/api/ApiManager';
 
 const ChangePassword = () => {
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [{ accessToken }, dispatch] = useStateValue();
+  const [cPassword, setCPassword] = useState('');
+  const [nPassword, setNPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    if (cPassword === '') {
+      alert('Please enter current password');
+    } else if (nPassword === '') {
+      alert('Please enter new password');
+    } else if (confirmPassword === '') {
+      alert('Please enter confirm password');
+    } else if (nPassword !== confirmPassword) {
+      Alert.alert(
+        'Password mismatch',
+        'New password and confirm password does not match'
+      );
+    } else {
+      setLoading(true);
+      const data = {
+        cpassword: cPassword,
+        npassword: nPassword,
+        confirmpassword: confirmPassword,
+        token: accessToken
+      };
+      const res = await updatePassword(data);
+      if (res && res.data && res.data.status === 'success') {
+        alert(res?.data?.message);
+        navigation.goBack();
+      } else {
+        alert(res?.data?.message);
+      }
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -36,25 +70,36 @@ const ChangePassword = () => {
             placeholder="Current Password"
             secureTextEntry
             isPassword
+            value={cPassword}
+            onChangeText={value => setCPassword(value)}
           />
           <TextInput
             label="New Password"
             placeholder="New Password"
             secureTextEntry
             isPassword
+            value={nPassword}
+            onChangeText={value => setNPassword(value)}
           />
           <TextInput
             label="Confirm New Password"
             placeholder="Confirm New Password"
             secureTextEntry
             isPassword
+            value={confirmPassword}
+            onChangeText={value => setConfirmPassword(value)}
           />
-          <Button label="Update Password" onPress={() => navigation.goBack()} />
+          <Button
+            loading={loading}
+            label="Update Password"
+            onPress={handleSubmit}
+          />
           <Button
             label="Cancel"
             onPress={() => navigation.goBack()}
             fill={false}
             danger
+            disabled={loading}
           />
         </View>
         <Image

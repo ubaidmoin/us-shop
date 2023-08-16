@@ -4,121 +4,144 @@ import {
   View,
   Image,
   FlatList,
-  ImageBackground,
-  Platform,
-  TouchableOpacity
+  TouchableOpacity,
+  Platform
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Button, Text, SearchBar, TextHighlight } from 'src/components';
-
-const data = [
-  {
-    type: 'Air Freight',
-    date: '18-03-2022',
-    country: 'Malaysia',
-    delivery_address:
-      '62-G, Jalan PJU 5/21 The Strand, Kota Damansara,, Petaling Jaya, 47810, Selangor',
-    shipping_cost: '270.84',
-    weight: '2.00',
-    status: 'Payment Pending'
-  },
-  {
-    type: 'Air Freight',
-    date: '18-03-2022',
-    country: 'Malaysia',
-    delivery_address:
-      '62-G, Jalan PJU 5/21 The Strand, Kota Damansara,, Petaling Jaya, 47810, Selangor',
-    shipping_cost: '270.84',
-    weight: '2.00',
-    status: 'Payment Pending'
-  },
-  {
-    type: 'Air Freight',
-    date: '18-03-2022',
-    country: 'Malaysia',
-    delivery_address:
-      '62-G, Jalan PJU 5/21 The Strand, Kota Damansara,, Petaling Jaya, 47810, Selangor',
-    shipping_cost: '270.84',
-    weight: '2.00',
-    status: 'Payment Pending'
-  },
-  {
-    type: 'Air Freight',
-    date: '18-03-2022',
-    country: 'Malaysia',
-    delivery_address:
-      '62-G, Jalan PJU 5/21 The Strand, Kota Damansara,, Petaling Jaya, 47810, Selangor',
-    shipping_cost: '270.84',
-    weight: '2.00',
-    status: 'Payment Pending'
-  },
-  {
-    type: 'Air Freight',
-    date: '18-03-2022',
-    country: 'Malaysia',
-    delivery_address:
-      '62-G, Jalan PJU 5/21 The Strand, Kota Damansara,, Petaling Jaya, 47810, Selangor',
-    shipping_cost: '270.84',
-    weight: '2.00',
-    status: 'Payment Pending'
-  }
-];
+import {
+  Button,
+  Text,
+  SearchBar,
+  TextHighlight,
+  ChangeCountry
+} from 'src/components';
+import { getDelivered } from 'src/services/api/ApiManager';
+import { SHIPPING_TYPE } from 'src/services/enums';
+import { getPriceByRate, normalizeDate } from 'src/services/constants';
 
 const Delivered = () => {
+  const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [{ accessToken, currencyRate, shop }, dispatch] = useStateValue();
   const [loading, setLoading] = useState(false);
+  const [list, setList] = useState([]);
+  const [packages, setPackages] = useState([]);
+  const [searchParam, setSearchParam] = useState('');
+
+  useEffect(() => {
+    if (isFocused) {
+      handleGetDelivered();
+    }
+  }, [isFocused]);
+
+  const handleGetDelivered = async () => {
+    setLoading(true);
+    const response = await getDelivered(accessToken);
+    if (response.status === 200) {
+      setList(response?.data?.data);
+      setPackages(response?.data?.data);
+    }
+    setLoading(false);
+  };
+
+  const handleSearch = search => {
+    if (search === '') {
+      setSearchParam('');
+      setList([...list]);
+    } else {
+      let _data = list && list.length === 0 ? packages : [...list];
+      _data = _data.filter(
+        item =>
+          item.created_at.toLowerCase().includes(search.toLowerCase()) ||
+          item.origin_country.toLowerCase().includes(search.toLowerCase()) ||
+          item.address.toLowerCase().includes(search.toLowerCase()) ||
+          item.total_cost
+            ?.toString()
+            .toLowerCase()
+            .includes(search.toLowerCase()) ||
+          item.total_weight
+            ?.toString()
+            .toLowerCase()
+            .includes(search.toLowerCase()) ||
+          item.tracking_code
+            ?.toString()
+            .toLowerCase()
+            .includes(search.toLowerCase())
+      );
+      setPackages(_data);
+      setSearchParam(search);
+    }
+  };
+
+  useEffect(() => {
+    handleGetDelivered();
+  }, [shop]);
 
   return (
     <View style={styles.container}>
-      <SearchBar />
+      <ChangeCountry />
+      <SearchBar
+        value={searchParam}
+        onChangeText={value => handleSearch(value)}
+      />
       <FlatList
-        data={data}
+        data={packages}
         style={styles.flatlist}
         renderItem={({ item, index }) => (
-          <View
+          <TouchableOpacity
             style={[
               styles.card,
-              { marginBottom: data.length - 1 === index ? 130 : 10 }
-            ]}>
+              { marginBottom: list.length - 1 === index ? 130 : 10 }
+            ]}
+            onPress={() =>
+              navigation.navigate('DeliveredDetails', {
+                id: item.id
+              })
+            }>
             <View style={styles.row}>
               <Text style={styles.heading}>Type: </Text>
-              <Text style={styles.subHeading}>{item.type}</Text>
+              <Text style={styles.subHeading}>
+                {SHIPPING_TYPE[item?.shipping_type]}
+              </Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.heading}>Date: </Text>
-              <Text style={styles.subHeading}>{item.date}</Text>
+              <Text style={styles.subHeading}>
+                {item?.created_at ? normalizeDate(item?.created_at) : ''}
+              </Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.heading}>Country: </Text>
-              <Text style={styles.subHeading}>{item.country}</Text>
+              <Text style={styles.subHeading}>{item?.origin_country}</Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.heading}>Delivery Address: </Text>
-              <Text style={styles.subHeading}>{item.delivery_address}</Text>
+              <Text style={styles.subHeading}>{item?.address}</Text>
             </View>
             <View style={styles.row}>
-              <Text style={styles.heading}>Cost (MYR): </Text>
-              <Text style={styles.cost}>{item.shipping_cost}</Text>
+              <Text style={styles.heading}>
+                Shipped Cost ({currencyRate?.currency_code}):{' '}
+              </Text>
+              <Text style={styles.cost}>
+                {getPriceByRate(
+                  item?.total_cost,
+                  currencyRate?.currency_rate
+                ).toFixed(2)}
+              </Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.heading}>Weight (LBS): </Text>
-              <Text style={styles.subHeading}>{item.weight}</Text>
+              <Text style={styles.subHeading}>{item?.total_weight}</Text>
             </View>
             <View style={styles.row}>
-              <Text style={styles.heading}>Status: </Text>
-              <TextHighlight
-                error={item.status.toLowerCase() === 'payment pending'}>
-                {item.status}
-              </TextHighlight>
+              <Text style={styles.heading}>Tracking ID: </Text>
+              <Text style={styles.subHeading}>{item?.tracking_code || ''}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
       />
       <TouchableOpacity

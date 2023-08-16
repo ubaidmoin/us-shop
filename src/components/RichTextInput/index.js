@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import {
   actions,
   RichEditor,
@@ -29,16 +29,14 @@ const RichTextInput = ({
     {!info && <Label label={label} />}
     <View style={styles.textInput}>
       <RichEditor
-        ref={ref}
+        ref={r => (ref = r)}
         placeholder={placeholder}
         style={styles.richText}
-        onChange={descriptionText => {
-          console.log('descriptionText:', descriptionText);
-        }}
+        onChange={onChangeText}
       />
     </View>
     <RichToolbar
-      ref={ref}
+      getEditor={() => ref}
       style={styles.toolbar}
       selectedIconTint="#1584F7"
       actions={[
@@ -63,7 +61,7 @@ const styles = StyleSheet.create({
     height: 200,
     backgroundColor: '#fff',
     borderRadius: 13,
-    width: '100%',
+    width: Platform.OS === 'ios' ? '100%' : '97.5%',
     shadowColor: '#1584F7',
     shadowOffset: {
       width: 2,
@@ -72,7 +70,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 13,
     elevation: 5,
-    fontFamily: 'Poppins-Regular'
+    fontFamily: 'Poppins-Regular',
+    marginHorizontal: Platform.OS === 'ios' ? 0 : 5
   },
   richText: {
     height: '100%',
