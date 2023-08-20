@@ -27,11 +27,17 @@ const Welcome = () => {
       style={styles.background}
       source={require('src/assets/images/background.png')}>
       <View style={styles.container}>
-        <Image
+        <View style={styles.logo}>
+          <ImageBackground
+            source={require('../../assets/images/logo-main.png')}
+            style={{ flex: 1, width: '100%', resizeMode: 'contain' }}
+          />
+        </View>
+        {/* <Image
           source={require('src/assets/images/logo-main.png')}
           style={styles.logo}
           resizeMode="contain"
-        />
+        /> */}
         <View style={styles.body}>
           <Dropdown
             label="Language"
@@ -84,7 +90,7 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   logo: {
-    minWidth: 256,
+    width: 256,
     height: 65
   },
   footer: {

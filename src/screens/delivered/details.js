@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { Linking, Modal, StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
 import {
@@ -8,11 +8,17 @@ import {
   Button,
   Price,
   PayNow,
-  MessageBox
+  MessageBox,
+  ShippingStatusStepper,
+  CheckBox
 } from 'src/components';
-import { viewDelivered } from 'src/services/api/ApiManager';
-import { PAYMENT_STATUS, SHIPPING_TYPE } from 'src/services/enums';
-import moment from 'moment';
+import { payNowBillPlz, viewDelivered } from 'src/services/api/ApiManager';
+import {
+  PAYMENT_STATUS,
+  SHIPPING_STATUS,
+  SHIPPING_TYPE
+} from 'src/services/enums';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getPriceByRate, normalizeDate } from 'src/services/constants';
 import {
   ScrollView,
@@ -28,6 +34,7 @@ const DeliveredDetails = () => {
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState([]);
   const [showPayNow, setShowPayNow] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   const handleGetDelivered = async () => {
     setLoading(true);
@@ -35,6 +42,16 @@ const DeliveredDetails = () => {
     console.log('response?.data', response?.data);
     if (response.status === 200) {
       setItem(response?.data);
+    }
+    setLoading(false);
+  };
+
+  const handleBillPlz = async () => {
+    setLoading(true);
+    const response = await payNowBillPlz(accessToken, id, 'buyforme');
+    console.log(response?.data);
+    if (response.status === 200) {
+      Linking.openURL(response?.data?.url);
     }
     setLoading(false);
   };
@@ -77,8 +94,8 @@ const DeliveredDetails = () => {
     currencyRate?.currency_rate
   );
 
-  const other_cost = cost - local_cost;
   const total_cost = cost + storage_fees + dangerous_goods + insurance;
+  const shipping_status = packageDetails?.shipping_status;
 
   return (
     <>
@@ -112,6 +129,10 @@ const DeliveredDetails = () => {
             <Text style={styles.subHeading}>{userShipment?.address}</Text>
           </View>
         </View>
+        <ShippingStatusStepper
+          admin_notes={packageDetails?.admin_notes}
+          shipping_status={shipping_status}
+        />
         <View style={[styles.card, { marginBottom: 10, padding: 10 }]}>
           <Text style={styles.heading}>TAX & DUTY</Text>
           <Text style={[styles.subHeading, { width: '100%' }]}>
@@ -187,11 +208,27 @@ const DeliveredDetails = () => {
           </View>
           {PAYMENT_STATUS[packageDetails?.payment_status] ===
             'Payment Pending' && (
-            <View style={{ width: '100%', marginTop: 10 }}>
+            <View style={{ width: '100%', marginTop: 20 }}>
+              {currencyRate?.currency_code === 'MYR' && (
+                <CheckBox
+                  message="I agree to the "
+                  messageHighlight="terms & conditions"
+                  checked={isChecked}
+                  setChecked={setIsChecked}
+                />
+              )}
               <Button
-                label="Pay With Card"
+                label={
+                  currencyRate?.currency_code === 'MYR'
+                    ? 'Pay Now'
+                    : 'Pay With Card'
+                }
                 fill
-                onPress={() => setShowPayNow(true)}
+                onPress={() =>
+                  currencyRate?.currency_code === 'MYR'
+                    ? handleBillPlz()
+                    : setShowPayNow(true)
+                }
               />
             </View>
           )}
@@ -206,7 +243,15 @@ const DeliveredDetails = () => {
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>
         <View style={styles.messageBox}>
-          <PayNow />
+          <PayNow
+            id={item?.id}
+            service="shipment"
+            showPayNow={showPayNow}
+            setShowPayNow={setShowPayNow}
+            reload={handleGetDelivered}
+            disabled={!isChecked}
+            setIsChecked={setIsChecked}
+          />
         </View>
       </Modal>
     </>
@@ -295,10 +340,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: '100%'
+    height: '50%',
+    backgroundColor: 'rgba(0,0,0,0.5)'
   },
   messageBox: {
     width: '90%',
+    height: '60%',
     backgroundColor: '#fff',
     shadowColor: '#1584F7',
     shadowOffset: {

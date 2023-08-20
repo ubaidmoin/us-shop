@@ -23,10 +23,31 @@ const Navigator = () => {
         <Tab.Screen
           name="ReceivedPackages"
           component={ReceivedPackages}
-          options={{ title: 'Received Packages' }}
+          options={{
+            title: 'Received Packages',
+            tabBarLabelStyle: {
+              fontSize: 10
+            }
+          }}
         />
-        <Tab.Screen name="Shipments" component={Shipments} />
-        <Tab.Screen name="Delivered" component={Delivered} />
+        <Tab.Screen
+          name="Shipments"
+          component={Shipments}
+          options={{
+            tabBarLabelStyle: {
+              fontSize: 10
+            }
+          }}
+        />
+        <Tab.Screen
+          name="Delivered"
+          component={Delivered}
+          options={{
+            tabBarLabelStyle: {
+              fontSize: 10
+            }
+          }}
+        />
       </Tab.Navigator>
     </>
   );

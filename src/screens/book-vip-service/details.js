@@ -75,7 +75,7 @@ const BookVIPServiceDetails = () => {
             <Text style={styles.cost}>{`${getPriceByRate(
               item?.total_fees,
               currencyRate?.currency_rate
-            )}`}</Text>
+            )?.toFixed(2)}`}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.heading}>Status: </Text>

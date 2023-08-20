@@ -17,6 +17,7 @@ import { AddonStack, VIPOrdersStack } from './StackNavigations';
 import { useStateValue } from 'src/services/state/State';
 import { actions } from 'src/services/state/Reducer';
 import InvoicesStack from './StackNavigations/InvoicesStack';
+import Membership from 'src/screens/membership';
 
 const Drawer = createDrawerNavigator();
 
@@ -56,6 +57,7 @@ const Navigator = () => {
       <Drawer.Screen name="ProhibitedItems" component={ProhibitedItems} />
       <Drawer.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
       <Drawer.Screen name="TermsAndConditions" component={TermsAndConditions} />
+      <Drawer.Screen name="Membership" component={Membership} />
     </Drawer.Navigator>
   );
 };

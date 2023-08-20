@@ -1,7 +1,5 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {
   NotificationsAddOns,
   NotificationsPackages,
@@ -23,7 +21,7 @@ const Navigator = () => {
           options={{
             title: 'Packages',
             tabBarLabelStyle: {
-              fontSize: 12
+              fontSize: 10
             }
           }}
         />
@@ -33,7 +31,7 @@ const Navigator = () => {
           options={{
             title: 'Shipments',
             tabBarLabelStyle: {
-              fontSize: 12
+              fontSize: 10
             }
           }}
         />
@@ -43,7 +41,7 @@ const Navigator = () => {
           options={{
             title: 'Addons',
             tabBarLabelStyle: {
-              fontSize: 12
+              fontSize: 10
             }
           }}
         />
@@ -53,7 +51,7 @@ const Navigator = () => {
           options={{
             title: 'Tickets',
             tabBarLabelStyle: {
-              fontSize: 12
+              fontSize: 10
             }
           }}
         />

@@ -65,7 +65,10 @@ const AddOnsDetails = () => {
               Amount ({currencyRate?.currency_code}):{' '}
             </Text>
             <Text style={styles.cost}>
-              {getPriceByRate(order?.total_fees, currencyRate?.currency_rate)}
+              {getPriceByRate(
+                order?.total_fees,
+                currencyRate?.currency_rate
+              )?.toFixed(2)}
             </Text>
           </View>
           <View style={styles.row}>

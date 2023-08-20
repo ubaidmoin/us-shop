@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Image, Platform } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Image,
+  Platform,
+  ImageBackground
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
@@ -16,11 +22,17 @@ const ResetPassword = () => {
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}>
-      <Image
+      <View style={styles.logo}>
+        <ImageBackground
+          source={require('../../assets/images/logo-main.png')}
+          style={{ flex: 1, width: '100%', resizeMode: 'contain' }}
+        />
+      </View>
+      {/* <Image
         source={require('src/assets/images/logo-main.png')}
         style={styles.logo}
         resizeMode="contain"
-      />
+      /> */}
       <View style={styles.body}>
         <TextInput
           label="Your Email"
@@ -59,7 +71,7 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   logo: {
-    minWidth: 256,
+    width: 256,
     height: 65
   },
   footer: {

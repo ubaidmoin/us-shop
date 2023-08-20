@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
+import { StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
@@ -8,6 +8,7 @@ import { humanDifferenceDate, normalizeDate } from 'src/services/constants';
 
 const NotificationsPackages = () => {
   const [{ notifications }] = useStateValue();
+  const navigation = useNavigation();
 
   console.log('notifications', notifications);
 
@@ -18,14 +19,19 @@ const NotificationsPackages = () => {
           data={notifications?.packages_notification || []}
           style={styles.flatlist}
           renderItem={({ item, index }) => (
-            <View
+            <TouchableOpacity
               style={[
                 styles.card,
                 {
                   marginBottom:
                     notifications?.packages_count - 1 === index ? 130 : 10
                 }
-              ]}>
+              ]}
+              onPress={() =>
+                navigation.navigate('ReceivedPackageDetails', {
+                  id: item?.id
+                })
+              }>
               <View style={styles.row}>
                 <View style={styles.icon}>
                   <FontAwesome name="dropbox" color="'#3699ff'" size={25} />
@@ -37,7 +43,7 @@ const NotificationsPackages = () => {
                   </Text>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
       )}

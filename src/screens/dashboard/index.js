@@ -16,10 +16,11 @@ import { Button, Text, Header, ChangeCountry } from 'src/components';
 import { formatPhoneNumber } from 'src/services/DataManager';
 import { getCountries } from 'src/services/api/ApiManager';
 import { actions } from 'src/services/state/Reducer';
+import { stateFreeAddress } from 'src/services/constants';
 
 const Dashboard = () => {
   const navigation = useNavigation();
-  const [{ currentUser, accessToken }, dispatch] = useStateValue();
+  const [{ currentUser, accessToken, shop }, dispatch] = useStateValue();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,8 @@ const Dashboard = () => {
     fetchCountries();
   }, []);
   console.log('currentUser', currentUser);
+  console.log('shop', shop);
+  const address = stateFreeAddress?.find(item => item.code === shop);
 
   return (
     <>
@@ -53,8 +56,9 @@ const Dashboard = () => {
         <View style={styles.info}>
           <Text style={styles.heading}>State Tax Free Address</Text>
           <Text style={styles.text}>
-            You can use the following details if you want to purchase the items
-            from the USA & we will do the shipping for you.
+            {`You can use the following details if you want to purchase the items from the ${
+              shop || 'USA'
+            } & we will do the shipping for you.`}
           </Text>
           <Text style={styles.subHeading}>Name</Text>
           <Text style={styles.subText}>
@@ -62,31 +66,24 @@ const Dashboard = () => {
           </Text>
           <Text style={styles.subHeading}>Address Line 1</Text>
           <Text style={styles.subText}>
-            {(currentUser && currentUser?.street_address) || ''}
+            {(address && address?.addressLine1) || ''}
           </Text>
           <Text style={styles.subHeading}>Address Line 2</Text>
           <Text style={styles.subText}>
-            {(currentUser &&
-              currentUser?.street_address &&
-              currentUser?.street_address.split(',') &&
-              currentUser?.street_address.split(',').length > 1 &&
-              currentUser?.street_address.split(',')[1]) ||
-              ''}
+            {(address && address?.addressLine2) || ''}
           </Text>
           <Text style={styles.subHeading}>City, State, Zip Code</Text>
-          <Text style={styles.subText}>{`${
-            (currentUser && currentUser?.city) || ''
-          }, ${(currentUser && currentUser?.state) || ''}, ${
-            (currentUser && currentUser?.country) || ''
-          }`}</Text>
+          <Text style={styles.subText}>{`${(address && address?.city) || ''} ${
+            (address && address?.state) || ''
+          } ${(address && address?.zipCode) || ''}`}</Text>
+          <Text style={styles.subHeading}>Country</Text>
+          <Text style={styles.subText}>{`${address && address?.country}`}</Text>
           <Text style={styles.subHeading}>Phone</Text>
-          <Text style={styles.subText}>{`${
-            (currentUser && currentUser?.lscode) || ''
-          } ${
-            (currentUser && formatPhoneNumber(currentUser?.phone)) || ''
-          }`}</Text>
+          <Text style={styles.subText}>{`${address && address?.phone}`}</Text>
           <Text style={[styles.heading, { marginTop: 10 }]}>
-            {`Lock Number: ${(currentUser && currentUser?.locker_code) || ''}`}
+            {`Locker Number: ${
+              (currentUser && currentUser?.locker_code) || ''
+            }`}
           </Text>
         </View>
         <View style={styles.accountContainer}>
@@ -222,7 +219,7 @@ const styles = StyleSheet.create({
     height: 100
   },
   heading: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#fff',
     fontWeight: '500'
   },
@@ -258,7 +255,7 @@ const styles = StyleSheet.create({
     padding: 20,
     width: '40%',
     borderRadius: 10,
-    height: 100,
+    minHeight: 100,
     marginTop: -40
   },
   pendingText: {
@@ -272,7 +269,7 @@ const styles = StyleSheet.create({
     padding: 20,
     width: '40%',
     borderRadius: 10,
-    height: 100,
+    minHeight: 100,
     marginTop: -40
   },
   paidIcon: {

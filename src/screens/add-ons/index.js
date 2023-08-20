@@ -9,8 +9,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
 import {
@@ -81,7 +80,9 @@ const AddOns = () => {
   return (
     <>
       <Header />
-      <View style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ alignItems: 'center', paddingBottom: 50 }}>
         <ChangeCountry />
         <SearchBar
           value={searchParam}
@@ -90,6 +91,7 @@ const AddOns = () => {
         <FlatList
           data={addOns}
           style={styles.flatlist}
+          nestedScrollEnabled
           renderItem={({ item, index }) => (
             <TouchableOpacity
               style={styles.card}
@@ -116,7 +118,7 @@ const AddOns = () => {
                   {getPriceByRate(
                     item?.total_fees,
                     currencyRate?.currency_rate
-                  )}
+                  )?.toFixed(2)}
                 </Text>
               </View>
               <View style={styles.row}>
@@ -132,12 +134,13 @@ const AddOns = () => {
             </TouchableOpacity>
           )}
         />
-        <TouchableOpacity
-          style={styles.newShipmentContainer}
-          onPress={() => navigation.navigate('CreateAddon')}>
-          <Text style={styles.newShipmentText}>Create Add-ons Order</Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
+      <TouchableOpacity
+        style={styles.newShipmentContainer}
+        onPress={() => navigation.navigate('CreateAddon')}>
+        {/* <MaterialCommunityIcons name="store-plus" color="#fff" size={25} /> */}
+        <Text style={styles.newShipmentText}>Create Addon</Text>
+      </TouchableOpacity>
     </>
   );
 };
@@ -147,8 +150,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 20,
     paddingHorizontal: 20,
-    backgroundColor: '#fff',
-    alignItems: 'center'
+    backgroundColor: '#fff'
   },
   contentContainer: {
     alignItems: 'center'
@@ -211,7 +213,7 @@ const styles = StyleSheet.create({
   },
   newShipmentText: {
     width: '100%',
-    fontSize: 12,
+    fontSize: 11,
     color: '#fff',
     textAlign: 'center'
   },

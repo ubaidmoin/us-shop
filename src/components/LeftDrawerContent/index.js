@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import { DrawerItem, DrawerContentScrollView } from '@react-navigation/drawer';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -15,6 +15,12 @@ const leftDrawerOptions = [
     label: 'Dashboard',
     value: 'MainTab',
     icon: <MaterialIcons name="dashboard" color="#3699ff" size={20} />
+  },
+  {
+    id: 10,
+    label: 'Membership',
+    value: 'Membership',
+    icon: <Entypo name="trophy" color="#3699ff" size={20} />
   },
   {
     id: 2,
@@ -103,19 +109,23 @@ const leftDrawerOptions = [
       }
     ],
     visible: false
+  },
+  {
+    id: 9,
+    label: 'Help Center',
+    value: 'HelpCenter',
+    icon: <FontAwesome5 name="book-open" color="#3699ff" size={20} />
   }
-  // {
-  //   id: 9,
-  //   label: 'Help Center',
-  //   value: 'Help Center',
-  //   icon: <FontAwesome5 name="book-open" color="#3699ff" size={20} />
-  // }
 ];
 
 const LeftDrawerContent = props => {
   const { navigation } = props;
   const [options, setOptions] = useState(leftDrawerOptions);
   const handleOnPressItem = (item, index) => {
+    if (item.value === 'HelpCenter') {
+      Linking.openURL('https://ushopus.com/market-place');
+      return;
+    }
     if (item.children) {
       const data = [...leftDrawerOptions];
       data[index].visible = !data[index].visible;
@@ -206,7 +216,7 @@ const styles = StyleSheet.create({
     paddingLeft: 5
   },
   label: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
     color: '#fff',
     fontFamily: 'Poppins-Regular',

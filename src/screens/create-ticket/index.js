@@ -67,7 +67,7 @@ const CreateTicket = () => {
           onChangeText={value => setDetails(value)}
           ref={richText}
         />
-        <ImageBrowser image={image} setImage={setImage} />
+        <ImageBrowser images={image} setImages={setImage} />
         <View style={styles.buttonsContainer}>
           <Button
             loading={loading}
@@ -95,7 +95,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   contentContainer: {
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingBottom: 200
   },
   body: {
     paddingTop: 50,
@@ -115,7 +116,8 @@ const styles = StyleSheet.create({
     padding: 5
   },
   buttonsContainer: {
-    width: '100%'
+    width: '100%',
+    paddingBottom: 150
   }
 });
 

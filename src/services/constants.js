@@ -12,6 +12,39 @@ export const toTitleCase = message => {
   return sentence.join(' ');
 };
 
+export const stateFreeAddress = [
+  {
+    code: 'US',
+    addressLine1: '101 Berwyck Court',
+    addressLine2: 'Unit 7353522',
+    city: 'Newark',
+    state: 'DE',
+    zipCode: 19702,
+    country: 'United States',
+    phone: '+1 (603) 451-5014'
+  },
+  {
+    code: 'GB',
+    addressLine1: 'SYS2 Ltd, Storage World, Old Hall Street',
+    addressLine2: 'Unit 7353522',
+    city: 'Middleton',
+    state: 'M24 1AG',
+    zipCode: '',
+    country: 'United Kingdom',
+    phone: '+44 7907 085960'
+  },
+  {
+    code: 'JP',
+    addressLine1: 'USE BUY FOR ME',
+    addressLine2: '',
+    city: 'USE BUY FOR ME',
+    state: '',
+    zipCode: '',
+    country: 'Japan',
+    phone: '+81 80 2140 4523'
+  }
+];
+
 export const insurance = [
   {
     label: 'Yes, I would like to have insurance.',

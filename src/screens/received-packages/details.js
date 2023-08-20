@@ -27,7 +27,7 @@ const ReceivedPackageDetails = () => {
   const navigation = useNavigation();
   const id = route?.params?.id;
 
-  const [{ accessToken }, dispatch] = useStateValue();
+  const [{ accessToken, currentUser }, dispatch] = useStateValue();
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState([]);
 
@@ -43,6 +43,9 @@ const ReceivedPackageDetails = () => {
   useEffect(() => {
     handleGetReceivedPackage();
   }, []);
+
+  const limit = currentUser?.membership === '1' ? 30 : 40;
+  const days = date => moment(new Date()).diff(date, 'days');
 
   return (
     <>
@@ -61,8 +64,15 @@ const ReceivedPackageDetails = () => {
           </View>
           <View style={styles.row}>
             <Text style={styles.heading}>Storage: </Text>
-            <TextHighlight>
-              {moment(new Date()).diff(item?.recieved_date, 'days')}
+            <TextHighlight
+              error={
+                PACKAGE_STATUS[item?.package_status] === 'Delivered'
+                  ? false
+                  : days(item?.recieved_date) > limit
+              }>
+              {PACKAGE_STATUS[item?.package_status]
+                ? 'Delivered'
+                : days(item?.recieved_date)}
             </TextHighlight>
           </View>
           <View style={styles.row}>
@@ -75,7 +85,8 @@ const ReceivedPackageDetails = () => {
           </View>
           <View style={styles.row}>
             <Text style={styles.heading}>Status: </Text>
-            <TextHighlight>
+            <TextHighlight
+              error={PACKAGE_STATUS[item?.package_status] === 'Disposed'}>
               {PACKAGE_STATUS[item?.package_status]}
             </TextHighlight>
           </View>

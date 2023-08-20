@@ -9,8 +9,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
 import {
@@ -28,7 +27,7 @@ import { normalizeDate } from 'src/services/constants';
 const ReceivedPackages = () => {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const [{ accessToken, shop }, dispatch] = useStateValue();
+  const [{ accessToken, shop, currentUser }, dispatch] = useStateValue();
   const [loading, setLoading] = useState(false);
   const [list, setList] = useState([]);
   const [packages, setPackages] = useState([]);
@@ -78,68 +77,83 @@ const ReceivedPackages = () => {
     handleGetReceivedPackages();
   }, [shop]);
 
-  // const country = useMemo(() => countries?.find(c => c?.id ===), [countries]);
+  const limit = currentUser?.membership === '1' ? 30 : 40;
+  const days = date => moment(new Date()).diff(date, 'days');
 
   return (
-    <View style={styles.container}>
-      <ChangeCountry />
-      <SearchBar
-        value={searchParam}
-        onChangeText={value => handleSearch(value)}
-      />
-      <FlatList
-        data={packages}
-        style={styles.flatlist}
-        renderItem={({ item, index }) => (
-          <TouchableOpacity
-            style={[
-              styles.card,
-              { marginBottom: list?.length - 1 === index ? 130 : 10 }
-            ]}
-            onPress={() =>
-              navigation.navigate('ReceivedPackageDetails', {
-                id: item.id
-              })
-            }>
-            <View style={styles.row}>
-              <Text style={styles.heading}>Tracking ID: </Text>
-              <Text style={styles.subHeading}>{item.tracking_id}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.heading}>Received: </Text>
-              <Text style={styles.subHeading}>
-                {normalizeDate(item?.recieved_date)}
-              </Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.heading}>Storage: </Text>
-              <TextHighlight>
-                {moment(new Date()).diff(item?.recieved_date, 'days')}
-              </TextHighlight>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.heading}>Origin: </Text>
-              <Text style={styles.subHeading}>{item?.origin_address}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.heading}>Dimensions (IN): </Text>
-              <Text style={styles.subHeading}>{item?.package_size}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.heading}>Status: </Text>
-              <TextHighlight>
-                {PACKAGE_STATUS[item?.package_status]}
-              </TextHighlight>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
+    <>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ alignItems: 'center', paddingBottom: 50 }}>
+        <ChangeCountry />
+        <SearchBar
+          value={searchParam}
+          onChangeText={value => handleSearch(value)}
+        />
+        <FlatList
+          data={packages}
+          style={styles.flatlist}
+          nestedScrollEnabled
+          renderItem={({ item, index }) => (
+            <TouchableOpacity
+              style={[
+                styles.card,
+                { marginBottom: list?.length - 1 === index ? 130 : 10 }
+              ]}
+              onPress={() =>
+                navigation.navigate('ReceivedPackageDetails', {
+                  id: item.id
+                })
+              }>
+              <View style={styles.row}>
+                <Text style={styles.heading}>Tracking ID: </Text>
+                <Text style={styles.subHeading}>{item.tracking_id}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.heading}>Received: </Text>
+                <Text style={styles.subHeading}>
+                  {normalizeDate(item?.recieved_date)}
+                </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.heading}>Storage: </Text>
+                <TextHighlight
+                  error={
+                    PACKAGE_STATUS[item?.package_status] === 'Delivered'
+                      ? false
+                      : days(item?.recieved_date) > limit
+                  }>
+                  {PACKAGE_STATUS[item?.package_status] === 'Delivered'
+                    ? 'Delivered'
+                    : `${days(item?.recieved_date)} Days`}
+                </TextHighlight>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.heading}>Origin: </Text>
+                <Text style={styles.subHeading}>{item?.origin_country}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.heading}>Dimensions (IN): </Text>
+                <Text style={styles.subHeading}>{item?.package_size}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.heading}>Status: </Text>
+                <TextHighlight
+                  error={PACKAGE_STATUS[item?.package_status] === 'Disposed'}>
+                  {PACKAGE_STATUS[item?.package_status]}
+                </TextHighlight>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      </ScrollView>
       <TouchableOpacity
         style={styles.newShipmentContainer}
         onPress={() => navigation.navigate('CreateShipment')}>
-        <Text style={styles.newShipmentText}>New Shipment</Text>
+        {/* <MaterialCommunityIcons name="store-plus" color="#fff" size={25} /> */}
+        <Text style={styles.newShipmentText}>Create Shipment</Text>
       </TouchableOpacity>
-    </View>
+    </>
   );
 };
 
@@ -148,8 +162,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 20,
     paddingHorizontal: 20,
-    backgroundColor: '#fff',
-    alignItems: 'center'
+    backgroundColor: '#fff'
   },
   contentContainer: {
     alignItems: 'center'
@@ -212,7 +225,7 @@ const styles = StyleSheet.create({
   },
   newShipmentText: {
     width: '100%',
-    fontSize: 12,
+    fontSize: 11,
     color: '#fff',
     textAlign: 'center'
   }

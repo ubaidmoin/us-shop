@@ -3,6 +3,7 @@ export const SHIPPING_STATUS = {
   1: 'Shipment Pending',
   2: 'Departed Locker Warehouse',
   3: 'Shipment Dispatched',
+  4: 'Delivered',
   5: 'In Transit'
 };
 

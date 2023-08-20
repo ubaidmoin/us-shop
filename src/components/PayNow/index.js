@@ -20,13 +20,16 @@ import { useIsFocused } from '@react-navigation/native';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import { toTitleCase } from 'src/services/constants';
+import CheckBox from '../CheckBox';
 
 const PayNow = ({
   id,
   service,
   showPayNow = false,
   setShowPayNow = () => {},
-  reload = () => {}
+  reload = () => {},
+  disabled = true,
+  setIsChecked = () => {}
 }) => {
   const isFocused = useIsFocused();
   console.log('isFocused', isFocused);
@@ -162,12 +165,19 @@ const PayNow = ({
           />
         </View>
       </View>
-      <View style={{ position: 'absolute', bottom: 20, left: 20, right: 20 }}>
+      <View style={{ position: 'absolute', bottom: 30, left: 20, right: 20 }}>
+        <CheckBox
+          message="I agree to the "
+          messageHighlight="terms & conditions"
+          checked={!disabled}
+          setChecked={setIsChecked}
+        />
         <Button
           label="Pay Now"
           fill
           onPress={() => handlePayNow(selectedCard)}
           loading={loadingPayment}
+          disabled={disabled}
         />
       </View>
     </>

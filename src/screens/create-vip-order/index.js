@@ -143,7 +143,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   contentContainer: {
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingBottom: 200
   },
   body: {
     paddingTop: 50,
@@ -171,7 +172,7 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     width: '100%',
-    paddingBottom: 50
+    paddingBottom: 150
   },
   modal: {
     alignItems: 'center',

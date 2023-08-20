@@ -19,6 +19,7 @@ import { humanDifferenceDate } from 'src/services/constants';
 
 const NotificationsAddOns = () => {
   const [{ notifications }] = useStateValue();
+  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -27,14 +28,19 @@ const NotificationsAddOns = () => {
           data={notifications?.addons_notification || []}
           style={styles.flatlist}
           renderItem={({ item, index }) => (
-            <View
+            <TouchableOpacity
               style={[
                 styles.card,
                 {
                   marginBottom:
                     notifications?.addons_count - 1 === index ? 130 : 10
                 }
-              ]}>
+              ]}
+              onPress={() =>
+                navigation.navigate('AddOnsDetails', {
+                  id: item?.id
+                })
+              }>
               <View style={styles.row}>
                 <View style={styles.icon}>
                   <FontAwesome name="dropbox" color="'#3699ff'" size={25} />
@@ -45,7 +51,7 @@ const NotificationsAddOns = () => {
                   </Text>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
       )}

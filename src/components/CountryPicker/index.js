@@ -1,8 +1,10 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Alert, Platform } from 'react-native';
 import CountryFlag from 'react-native-country-flag';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Text } from 'src/components';
+import { removeUserInfo } from 'src/services/DataManager';
 import {
   getCountries,
   getShops,
@@ -26,9 +28,25 @@ const CountryPicker = ({
   const [{ accessToken, shop }, dispatch] = useStateValue();
   const [shops, setShops] = useState([]);
   const [showCountryPicker, setShowCountryPicker] = useState(false);
+  const navigation = useNavigation();
 
   const handleGetShops = async () => {
     const response = await getShops(accessToken);
+    if (response.status === 401) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }]
+      });
+      await removeUserInfo();
+      dispatch({
+        type: actions.SET_CURRENT_USER,
+        payload: undefined
+      });
+      dispatch({
+        type: actions.SET_ACCESS_TOKEN,
+        payload: ''
+      });
+    }
     if (response.status === 200) {
       setShops(response?.data?.data);
       dispatch({

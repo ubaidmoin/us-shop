@@ -1,9 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Text, Header, Button, Price } from 'src/components';
-import { viewShipment } from 'src/services/api/ApiManager';
+import {
+  Text,
+  Header,
+  Button,
+  Price,
+  ShippingStatusStepper,
+  CheckBox
+} from 'src/components';
+import { payNowBillPlz, viewShipment } from 'src/services/api/ApiManager';
 import { PAYMENT_STATUS, SHIPPING_TYPE } from 'src/services/enums';
 import { getPriceByRate, normalizeDate } from 'src/services/constants';
 
@@ -15,6 +22,8 @@ const DeliveredDetails = () => {
   const [{ accessToken, currencyRate }, dispatch] = useStateValue();
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState([]);
+  const [showPayNow, setShowPayNow] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   const handleGetShipment = async () => {
     setLoading(true);
@@ -22,6 +31,16 @@ const DeliveredDetails = () => {
     console.log('response?.data', response?.data);
     if (response.status === 200) {
       setItem(response?.data);
+    }
+    setLoading(false);
+  };
+
+  const handleBillPlz = async () => {
+    setLoading(true);
+    const response = await payNowBillPlz(accessToken, id, 'buyforme');
+    console.log(response?.data);
+    if (response.status === 200) {
+      Linking.openURL(response?.data?.url);
     }
     setLoading(false);
   };
@@ -64,8 +83,8 @@ const DeliveredDetails = () => {
     currencyRate?.currency_rate
   );
 
-  const other_cost = cost - local_cost;
   const total_cost = cost + storage_fees + dangerous_goods + insurance;
+  const shipping_status = packageDetails?.shipping_status;
 
   return (
     <>
@@ -99,6 +118,10 @@ const DeliveredDetails = () => {
             <Text style={styles.subHeading}>{userShipment?.address}</Text>
           </View>
         </View>
+        <ShippingStatusStepper
+          admin_notes={packageDetails?.admin_notes}
+          shipping_status={shipping_status}
+        />
         <View style={[styles.card, { marginBottom: 10, padding: 10 }]}>
           <Text style={styles.heading}>TAX & DUTY</Text>
           <Text style={[styles.subHeading, { width: '100%' }]}>
@@ -174,8 +197,28 @@ const DeliveredDetails = () => {
           </View>
           {PAYMENT_STATUS[packageDetails?.payment_status] ===
             'Payment Pending' && (
-            <View style={{ width: '100%', marginTop: 10 }}>
-              <Button label="Pay With Card" fill />
+            <View style={{ width: '100%', marginTop: 20 }}>
+              {currencyRate?.currency_code === 'MYR' && (
+                <CheckBox
+                  message="I agree to the "
+                  messageHighlight="terms & conditions"
+                  checked={isChecked}
+                  setChecked={setIsChecked}
+                />
+              )}
+              <Button
+                label={
+                  currencyRate?.currency_code === 'MYR'
+                    ? 'Pay Now'
+                    : 'Pay With Card'
+                }
+                fill
+                onPress={() =>
+                  currencyRate?.currency_code === 'MYR'
+                    ? handleBillPlz()
+                    : setShowPayNow(true)
+                }
+              />
             </View>
           )}
         </View>

@@ -1,9 +1,9 @@
-import React, {createContext, useContext, useReducer} from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import {initialState} from './InitialState';
+import { initialState } from './InitialState';
 
 export const StateContext = createContext(initialState);
-export const StateProvider = ({reducer, initialState, children}) => (
+export const StateProvider = ({ reducer, initialState, children }) => (
   <StateContext.Provider value={useReducer(reducer, initialState)}>
     {children}
   </StateContext.Provider>
@@ -11,6 +11,6 @@ export const StateProvider = ({reducer, initialState, children}) => (
 StateProvider.propTypes = {
   reducer: PropTypes.func.isRequired,
   initialState: PropTypes.object.isRequired,
-  children: PropTypes.node,
+  children: PropTypes.node
 };
 export const useStateValue = () => useContext(StateContext);

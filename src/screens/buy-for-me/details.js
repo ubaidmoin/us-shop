@@ -20,7 +20,8 @@ import {
   TextHighlight,
   Header,
   PayNow,
-  Label
+  Label,
+  CheckBox
 } from 'src/components';
 import { payNowBillPlz, viewBuyForMe } from 'src/services/api/ApiManager';
 import { PACKAGE_STATUS, PAYMENT_STATUS } from 'src/services/enums';
@@ -39,6 +40,7 @@ const BuyForMeDetails = () => {
   const [item, setItem] = useState([]);
   const [gallery, setGallery] = useState([]);
   const [showPayNow, setShowPayNow] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   const handleGetBuyForMe = async () => {
     setLoading(true);
@@ -89,7 +91,7 @@ const BuyForMeDetails = () => {
             } ${getPriceByRate(
               item?.total_price,
               currencyRate?.currency_rate
-            )}`}</Text>
+            )?.toFixed(2)}`}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.heading}>Number of Websites: </Text>
@@ -102,7 +104,7 @@ const BuyForMeDetails = () => {
             } ${getPriceByRate(
               item?.total_fees,
               currencyRate?.currency_rate
-            )}`}</Text>
+            )?.toFixed(2)}`}</Text>
           </View>
           <View style={styles.row}>
             <Text
@@ -114,7 +116,7 @@ const BuyForMeDetails = () => {
             } ${getPriceByRate(
               item?.total_fees + item?.total_price,
               currencyRate?.currency_rate
-            )}`}</Text>
+            )?.toFixed(2)}`}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.heading}>Payment Scheduled: </Text>
@@ -157,7 +159,15 @@ const BuyForMeDetails = () => {
           </View>
         </View>
         {PAYMENT_STATUS[item?.payment_status] === 'Payment Pending' && (
-          <View style={{ width: '100%', marginTop: 10, paddingBottom: 120 }}>
+          <View style={{ width: '100%', marginTop: 20, paddingBottom: 120 }}>
+            {currencyRate?.currency_code === 'MYR' && (
+              <CheckBox
+                message="I agree to the "
+                messageHighlight="terms & conditions"
+                checked={isChecked}
+                setChecked={setIsChecked}
+              />
+            )}
             <Button
               label={
                 currencyRate?.currency_code === 'MYR'
@@ -190,6 +200,8 @@ const BuyForMeDetails = () => {
             showPayNow={showPayNow}
             setShowPayNow={setShowPayNow}
             reload={handleGetBuyForMe}
+            disabled={!isChecked}
+            setIsChecked={setIsChecked}
           />
         </View>
       </Modal>
@@ -274,10 +286,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: '100%'
+    height: '50%',
+    backgroundColor: 'rgba(0,0,0,0.5)'
   },
   messageBox: {
     width: '90%',
+    height: '60%',
     backgroundColor: '#fff',
     shadowColor: '#1584F7',
     shadowOffset: {
@@ -289,8 +303,7 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     elevation: 5,
     alignSelf: 'center',
-    marginTop: '20%',
-    height: '80%'
+    marginTop: '20%'
   },
   modalOverlay: {
     position: 'absolute',

@@ -19,6 +19,7 @@ import { humanDifferenceDate } from 'src/services/constants';
 
 const NotificationsTickets = () => {
   const [{ notifications }] = useStateValue();
+  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -27,14 +28,15 @@ const NotificationsTickets = () => {
           data={notifications?.tickets_notification || []}
           style={styles.flatlist}
           renderItem={({ item, index }) => (
-            <View
+            <TouchableOpacity
               style={[
                 styles.card,
                 {
                   marginBottom:
                     notifications?.tickets_count - 1 === index ? 130 : 10
                 }
-              ]}>
+              ]}
+              onPress={() => {}}>
               <View style={styles.row}>
                 <View style={styles.icon}>
                   <FontAwesome name="dropbox" color="'#3699ff'" size={25} />
@@ -46,7 +48,7 @@ const NotificationsTickets = () => {
                   </Text>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
       )}

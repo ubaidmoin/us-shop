@@ -9,8 +9,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
 import {
@@ -71,73 +70,78 @@ const Shipments = () => {
   }, [shop]);
 
   return (
-    <View style={styles.container}>
-      <ChangeCountry />
-      <SearchBar
-        value={searchParam}
-        onChangeText={value => handleSearch(value)}
-      />
-      <FlatList
-        data={list}
-        style={styles.flatlist}
-        renderItem={({ item, index }) => (
-          <TouchableOpacity
-            style={[
-              styles.card,
-              { marginBottom: list?.length - 1 === index ? 130 : 10 }
-            ]}
-            onPress={() =>
-              navigation.navigate('ShipmentDetails', {
-                id: item.id
-              })
-            }>
-            <View style={styles.row}>
-              <Text style={styles.heading}>Type: </Text>
-              <Text style={styles.subHeading}>
-                {SHIPPING_TYPE[item?.shipping_type - 1]}
-              </Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.heading}>Date: </Text>
-              <Text style={styles.subHeading}>
-                {item?.created_at ? normalizeDate(item?.created_at) : ''}
-              </Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.heading}>Country: </Text>
-              <Text style={styles.subHeading}>{item?.origin_country}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.heading}>Delivery Address: </Text>
-              <Text style={styles.subHeading}>{item?.address}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.heading}>
-                Shipped Cost ({currencyRate?.currency_code}):{' '}
-              </Text>
-              <Text style={styles.cost}>
-                {getPriceByRate(
-                  item?.total_cost,
-                  currencyRate?.currency_rate
-                ).toFixed(2)}
-              </Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.heading}>Status: </Text>
-              <TextHighlight>
-                {/* // error={item?.shipping_status?.toLowerCase() === 'payment pending'}> */}
-                {SHIPPING_STATUS[item?.shipping_status]}
-              </TextHighlight>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
+    <>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ alignItems: 'center', paddingBottom: 50 }}>
+        <ChangeCountry />
+        <SearchBar
+          value={searchParam}
+          onChangeText={value => handleSearch(value)}
+        />
+        <FlatList
+          data={list}
+          style={styles.flatlist}
+          nestedScrollEnabled
+          renderItem={({ item, index }) => (
+            <TouchableOpacity
+              style={[
+                styles.card,
+                { marginBottom: list?.length - 1 === index ? 130 : 10 }
+              ]}
+              onPress={() =>
+                navigation.navigate('ShipmentDetails', {
+                  id: item.id
+                })
+              }>
+              <View style={styles.row}>
+                <Text style={styles.heading}>Type: </Text>
+                <Text style={styles.subHeading}>
+                  {SHIPPING_TYPE[item?.shipping_type - 1]}
+                </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.heading}>Date: </Text>
+                <Text style={styles.subHeading}>
+                  {item?.created_at ? normalizeDate(item?.created_at) : ''}
+                </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.heading}>Country: </Text>
+                <Text style={styles.subHeading}>{item?.origin_country}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.heading}>Delivery Address: </Text>
+                <Text style={styles.subHeading}>{item?.address}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.heading}>
+                  Shipped Cost ({currencyRate?.currency_code}):{' '}
+                </Text>
+                <Text style={styles.cost}>
+                  {getPriceByRate(
+                    item?.total_cost,
+                    currencyRate?.currency_rate
+                  ).toFixed(2)}
+                </Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.heading}>Status: </Text>
+                <TextHighlight>
+                  {SHIPPING_STATUS[item?.shipping_status]}
+                </TextHighlight>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      </ScrollView>
       <TouchableOpacity
         style={styles.newShipmentContainer}
         onPress={() => navigation.navigate('CreateShipment')}>
-        <Text style={styles.newShipmentText}>New Shipment</Text>
+        {/* <MaterialCommunityIcons name="store-plus" color="#fff" size={25} /> */}
+        <Text style={styles.newShipmentText}>Create Shipment</Text>
       </TouchableOpacity>
-    </View>
+    </>
   );
 };
 
@@ -146,8 +150,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 20,
     paddingHorizontal: 20,
-    backgroundColor: '#fff',
-    alignItems: 'center'
+    backgroundColor: '#fff'
   },
   contentContainer: {
     alignItems: 'center'
@@ -210,7 +213,7 @@ const styles = StyleSheet.create({
   },
   newShipmentText: {
     width: '100%',
-    fontSize: 12,
+    fontSize: 11,
     color: '#fff',
     textAlign: 'center'
   },

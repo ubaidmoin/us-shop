@@ -69,7 +69,9 @@ const SupportTickets = () => {
   return (
     <>
       <Header />
-      <View style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ alignItems: 'center', paddingBottom: 50 }}>
         <ChangeCountry />
         <SearchBar
           value={searchParam}
@@ -78,6 +80,7 @@ const SupportTickets = () => {
         <FlatList
           data={tickets}
           style={styles.flatlist}
+          nestedScrollEnabled
           renderItem={({ item, index }) => (
             <View style={styles.card}>
               <View style={styles.row}>
@@ -104,7 +107,7 @@ const SupportTickets = () => {
             </View>
           )}
         />
-      </View>
+      </ScrollView>
     </>
   );
 };
@@ -114,8 +117,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 20,
     paddingHorizontal: 20,
-    backgroundColor: '#fff',
-    alignItems: 'center'
+    backgroundColor: '#fff'
   },
   contentContainer: {
     alignItems: 'center'

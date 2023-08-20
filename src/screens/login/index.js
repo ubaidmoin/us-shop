@@ -58,11 +58,12 @@ const Login = () => {
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}>
-      <Image
-        source={require('../../assets/images/logo-main.png')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+      <View style={styles.logo}>
+        <ImageBackground
+          source={require('../../assets/images/logo-main.png')}
+          style={{ flex: 1, width: '100%', resizeMode: 'contain' }}
+        />
+      </View>
       <View style={styles.body}>
         <TextInput
           label="Your Email"
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   logo: {
-    minWidth: 256,
+    width: 256,
     height: 65
   },
   footer: {
