@@ -22,6 +22,10 @@ const ChangeCountry = ({}) => {
     if (response.status === 200) {
       setShops(response?.data?.data);
       dispatch({
+        type: actions.SET_SHOPS,
+        payload: response?.data?.data
+      });
+      dispatch({
         type: actions.SET_SHOP,
         payload: response?.data?.current_country_code
       });
@@ -58,10 +62,13 @@ const ChangeCountry = ({}) => {
     handleGetShops();
   }, []);
 
+  const currentShopName =
+    shops?.find(item => item?.country?.code === shop)?.country?.name || '';
+
   return (
     <View style={{ zIndex: 20, width: '100%' }}>
       <CountryPicker
-        label="You are currently in United States store. You may switch the store to shop in different countries."
+        label={`You are currently in ${currentShopName} store. You may switch the store to shop in different countries.`}
         items={shops.map(item => ({
           value: item?.country?.code,
           label: item?.country?.name

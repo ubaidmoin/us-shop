@@ -17,7 +17,8 @@ import {
   Text,
   SearchBar,
   TextHighlight,
-  ChangeCountry
+  ChangeCountry,
+  Title
 } from 'src/components';
 import { addOnsList } from 'src/services/api/ApiManager';
 import { getPriceByRate, normalizeDate } from 'src/services/constants';
@@ -101,20 +102,23 @@ const AddOns = () => {
                 })
               }>
               <View style={styles.row}>
-                <Text style={styles.heading}>ID: </Text>
+                {/* <Text style={styles.heading}>ID: </Text> */}
+                <Title label="ID" />
                 <Text style={styles.subHeading}>{item?.id}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Date: </Text>
+                {/* <Text style={styles.heading}>Date: </Text> */}
+                <Title label="Date" />
                 <Text style={styles.subHeading}>
                   {normalizeDate(item?.created_at)}
                 </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>
+                {/* <Text style={styles.heading}>
                   Amount ({currencyRate?.currency_code}):{' '}
-                </Text>
-                <Text style={styles.cost}>
+                </Text> */}
+                <Title label={`Amount (${currencyRate?.currency_code})`} />
+                <Text style={{ marginLeft: 10 }}>
                   {getPriceByRate(
                     item?.total_fees,
                     currencyRate?.currency_rate
@@ -122,13 +126,15 @@ const AddOns = () => {
                 </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Payment: </Text>
+                {/* <Text style={styles.heading}>Payment: </Text> */}
+                <Title label="Payment" />
                 <TextHighlight error={PAYMENT_STATUS[item?.payment_status]}>
                   {PAYMENT_STATUS[item?.payment_status]}
                 </TextHighlight>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Status: </Text>
+                {/* <Text style={styles.heading}>Status: </Text> */}
+                <Title label="Status" />
                 <TextHighlight>{'Processing'}</TextHighlight>
               </View>
             </TouchableOpacity>
@@ -184,7 +190,8 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '60%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',

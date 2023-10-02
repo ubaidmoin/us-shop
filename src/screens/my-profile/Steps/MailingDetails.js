@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { TextInput, Dropdown } from 'src/components';
-import { countries } from 'src/services/constants';
 
 const MailingDetails = ({
   handleCloseCountry = () => {},
@@ -20,7 +19,8 @@ const MailingDetails = ({
   postalCode = '',
   setPostalCode = () => {},
   openCountry = false,
-  setOpenCountry = () => {}
+  setOpenCountry = () => {},
+  countries = []
 }) => {
   const navigation = useNavigation();
 
@@ -62,7 +62,10 @@ const MailingDetails = ({
         placeholder="Country"
         visible={openCountry}
         setOpen={() => setOpenCountry(!openCountry)}
-        items={countries}
+        items={countries?.map(item => ({
+          value: item?.id,
+          label: item?.name
+        }))}
         selectedItem={selectedCountry}
         setSelectedItem={value => setSelectedCountry(value)}
         style={{ zIndex: 10 }}

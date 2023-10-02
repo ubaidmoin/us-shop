@@ -5,7 +5,7 @@ import {
   Image,
   FlatList,
   ImageBackground,
-  Platform,
+  Alert,
   ScrollView
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -86,9 +86,22 @@ const Calculator = () => {
       height: parseInt(state?.height, 0),
       size_type: selectedLengthUnit
     });
-    console.log(response.data);
+    console.log(response);
     if (response.status === 200) {
       setResult(response?.data);
+    } else {
+      console.log(
+        SHIPPING_TYPE_ENUM,
+        shippingCountry,
+        SHIPPING_TYPE_ENUM?.find(item => item.value === shippingCountry)?.label
+      );
+      Alert.alert(
+        'Sorry!',
+        `Unfortunately, we do not provide ${
+          SHIPPING_TYPE_ENUM?.find(item => item.value === shippingCountry)
+            ?.label
+        } to ${countries?.find(item => item?.id === selectedCountry)?.name}..`
+      );
     }
     setLoading(false);
   };
@@ -165,7 +178,7 @@ const Calculator = () => {
               />
             </View>
           </View>
-          <View style={styles.row}>
+          <View style={[styles.row, { zIndex: -10 }]}>
             <View style={styles.column}>
               <TextInput
                 label="Length"

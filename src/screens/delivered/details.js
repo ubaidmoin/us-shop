@@ -10,7 +10,8 @@ import {
   PayNow,
   MessageBox,
   ShippingStatusStepper,
-  CheckBox
+  CheckBox,
+  Title
 } from 'src/components';
 import { payNowBillPlz, viewDelivered } from 'src/services/api/ApiManager';
 import {
@@ -105,19 +106,22 @@ const DeliveredDetails = () => {
         contentContainerStyle={{ alignItems: 'center' }}>
         <View style={[styles.card, { marginBottom: 10 }]}>
           <View style={styles.row}>
-            <Text style={styles.heading}>Received: </Text>
+            {/* <Text style={styles.heading}>Received: </Text> */}
+            <Title label="Received" />
             <Text style={styles.subHeading}>
               {normalizeDate(packageDetails?.created_at)}
             </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Shipping Type: </Text>
+            {/* <Text style={styles.heading}>Shipping Type: </Text> */}
+            <Title label="Shipping Type" />
             <Text style={styles.subHeading}>
               {SHIPPING_TYPE[packageDetails?.shipping_type]}
             </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Customer Detail: </Text>
+            {/* <Text style={styles.heading}>Customer Detail: </Text> */}
+            <Title label="Customer Detail" />
             <View>
               <Text>{userShipment?.customer_name}</Text>
               <Text>{userShipment?.customer_email}</Text>
@@ -125,7 +129,8 @@ const DeliveredDetails = () => {
             </View>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Delivery Address: </Text>
+            {/* <Text style={styles.heading}>Delivery Address: </Text> */}
+            <Title label="Delivery Address" />
             <Text style={styles.subHeading}>{userShipment?.address}</Text>
           </View>
         </View>
@@ -298,11 +303,12 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '60%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     width: '100%',
     padding: 5
   },

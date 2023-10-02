@@ -4,11 +4,17 @@ import {
   NotificationsAddOns,
   NotificationsPackages,
   NotificationsShipments,
-  NotificationsTickets
+  NotificationsTickets,
+  TicketDetails
 } from 'src/screens';
 import { Header } from 'src/components';
+import { createStackNavigator } from '@react-navigation/stack';
+import ReceivedPackageDetails from 'src/screens/received-packages/details';
+import ShipmentDetails from 'src/screens/shipments/details';
+import AddOnsDetails from 'src/screens/add-ons/details';
 
 const Tab = createMaterialTopTabNavigator();
+const Stack = createStackNavigator();
 
 const Navigator = () => {
   return (
@@ -21,7 +27,7 @@ const Navigator = () => {
           options={{
             title: 'Packages',
             tabBarLabelStyle: {
-              fontSize: 10
+              fontSize: 9
             }
           }}
         />
@@ -31,7 +37,7 @@ const Navigator = () => {
           options={{
             title: 'Shipments',
             tabBarLabelStyle: {
-              fontSize: 10
+              fontSize: 9
             }
           }}
         />
@@ -41,7 +47,7 @@ const Navigator = () => {
           options={{
             title: 'Addons',
             tabBarLabelStyle: {
-              fontSize: 10
+              fontSize: 9
             }
           }}
         />
@@ -51,7 +57,7 @@ const Navigator = () => {
           options={{
             title: 'Tickets',
             tabBarLabelStyle: {
-              fontSize: 10
+              fontSize: 9
             }
           }}
         />
@@ -60,8 +66,40 @@ const Navigator = () => {
   );
 };
 
+const StackNavigator = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="ShipmentStack"
+        component={Navigator}
+        options={{ gestureEnabled: false, header: () => null }}
+      />
+      <Stack.Screen
+        name="ReceivedPackageDetails"
+        component={ReceivedPackageDetails}
+        options={{ header: () => null }}
+      />
+      <Stack.Screen
+        name="ShipmentDetails"
+        component={ShipmentDetails}
+        options={{ header: () => null }}
+      />
+      <Stack.Screen
+        name="AddOnsDetails"
+        component={AddOnsDetails}
+        options={{ header: () => null }}
+      />
+      <Stack.Screen
+        name="TicketDetails"
+        component={TicketDetails}
+        options={{ header: () => null }}
+      />
+    </Stack.Navigator>
+  );
+};
+
 const RootNavigator = () => {
-  return <Navigator />;
+  return <StackNavigator />;
 };
 
 const NotificationsTab = () => {

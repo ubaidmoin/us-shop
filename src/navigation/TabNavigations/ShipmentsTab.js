@@ -5,7 +5,8 @@ import {
   ReceivedPackages,
   Shipments,
   Delivered,
-  CreateShipment
+  CreateShipment,
+  TermsAndConditionsStackScreen
 } from 'src/screens';
 import { Header } from 'src/components';
 import ReceivedPackageDetails from 'src/screens/received-packages/details';
@@ -79,6 +80,11 @@ const StackNavigator = () => {
       <Stack.Screen
         name="DeliveredDetails"
         component={DeliveredDetails}
+        options={{ header: () => null }}
+      />
+      <Stack.Screen
+        name="TermsAndConditionsStackScreen"
+        component={TermsAndConditionsStackScreen}
         options={{ header: () => null }}
       />
     </Stack.Navigator>

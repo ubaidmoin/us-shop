@@ -19,8 +19,8 @@ const genders = [
 
 const MyProfile = () => {
   const navigation = useNavigation();
-  const [{ currentUser, countries }, dispatch] = useStateValue();
-  const [email, setEmail] = useState('');
+  const [{ currentUser, countries, currencyRate }, dispatch] = useStateValue();
+  const [email, setEmail] = useState(currentUser?.email || '');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(0);
@@ -29,7 +29,7 @@ const MyProfile = () => {
     (currentUser && currentUser?.gender === 'Male' ? 'm' : 'f') || ''
   );
   const [countryCode, setCountryCode] = useState(
-    (currentUser && currentUser?.lscode) || ''
+    countries?.find(c => currentUser?.country === c?.name)?.id
   );
   const [openCountryCode, setOpenCountryCode] = useState(false);
   const [phone, setPhone] = useState((currentUser && currentUser?.phone) || '');
@@ -45,14 +45,7 @@ const MyProfile = () => {
     (currentUser && currentUser?.postal_code) || ''
   );
   const [country, setCountry] = useState(
-    (currentUser &&
-      countries.find(
-        c => c.name.toLowerCase() === currentUser?.country.toLowerCase()
-      ) &&
-      countries.find(
-        c => c.name.toLowerCase() === currentUser?.country.toLowerCase()
-      ).value) ||
-      ''
+    countries?.find(c => currentUser?.country === c?.name)?.id
   );
   const [openCountry, setOpenCountry] = useState(false);
 
@@ -60,7 +53,7 @@ const MyProfile = () => {
   const handlePrevious = () => setActive(active - 1);
 
   const handleSubmit = () => {
-    navigation.navigate('Login');
+    navigation.navigate('Dashboard');
   };
 
   return (
@@ -144,6 +137,7 @@ const MyProfile = () => {
               setSelectedCountry={setCountry}
               openCountry={openCountry}
               setOpenCountry={setOpenCountry}
+              countries={countries}
             />
           )}
           <Button

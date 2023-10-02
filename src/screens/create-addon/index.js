@@ -34,7 +34,6 @@ const CreateAddon = () => {
   const handleGetReceivedPackages = async () => {
     setLoading(true);
     const response = await createGetAddon(accessToken);
-    console.log(response);
     if (response.status === 200) {
       setCount(response?.data?.count);
       setPackages(response?.data?.packages);
@@ -121,7 +120,7 @@ const CreateAddon = () => {
             items={services?.map(item => ({
               label: item?.name,
               value: item?.id,
-              description: `(${
+              description: `($${
                 JSON.parse(item?.cost)?.[currentUser?.membership - 1]
               } for ${item?.quantity} ${item?.Descriptions})`
             }))}

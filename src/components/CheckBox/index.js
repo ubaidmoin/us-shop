@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -8,6 +9,7 @@ const CheckBox = ({
   message = '',
   messageHighlight = ''
 }) => {
+  const navigation = useNavigation();
   const handleCheckedChange = () => {
     setChecked(!checked);
   };
@@ -22,7 +24,12 @@ const CheckBox = ({
       <View style={styles.container}>
         <Text style={styles.checkboxText}>{message}</Text>
         {!!messageHighlight && (
-          <Text style={styles.checkboxHighlightText}>{messageHighlight}</Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('TermsAndConditionsStackScreen')
+            }>
+            <Text style={styles.checkboxHighlightText}>{messageHighlight}</Text>
+          </TouchableOpacity>
         )}
       </View>
     </TouchableOpacity>

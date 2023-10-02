@@ -10,7 +10,14 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Button, Text, SearchBar, TextHighlight, Header } from 'src/components';
+import {
+  Button,
+  Text,
+  SearchBar,
+  TextHighlight,
+  Header,
+  Title
+} from 'src/components';
 import { viewBuyForMe, viewVipServices } from 'src/services/api/ApiManager';
 import { PACKAGE_STATUS, PAYMENT_STATUS } from 'src/services/enums';
 import moment from 'moment';
@@ -45,40 +52,47 @@ const BookVIPServiceDetails = () => {
       <View style={styles.container}>
         <View style={[styles.card, { marginBottom: 10 }]}>
           <View style={styles.row}>
-            <Text style={styles.heading}>Date: </Text>
+            {/* <Text style={styles.heading}>Date: </Text> */}
+            <Title label="Date" />
             <Text style={styles.subHeading}>
               {normalizeDate(item?.created_at)}
             </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Shopping Date: </Text>
+            {/* <Text style={styles.heading}>Shopping Date: </Text> */}
+            <Title label="Shopping Date" />
             <Text style={styles.subHeading}>
               {normalizeDate(item?.service_date)}
             </Text>
           </View>
-          <View style={styles.row}>
-            <Text style={styles.heading}>Shopping Time: </Text>
-            <Text style={styles.cost}>{item?.service_time}</Text>
+          <View style={[styles.row, { alignItems: 'flex-start' }]}>
+            {/* <Text style={styles.heading}>Shopping Time: </Text> */}
+            <Title label="Shopping Time" />
+            <Text style={{ width: '60%' }}>{item?.service_time}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Hours: </Text>
+            {/* <Text style={styles.heading}>Hours: </Text> */}
+            <Title label="Hours" />
             <Text style={styles.subHeading}>{item?.total_hours}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Miles: </Text>
-            <Text style={styles.cost}>{item?.total_miles}</Text>
+            {/* <Text style={styles.heading}>Miles: </Text> */}
+            <Title label="Miles" />
+            <Text style={{ marginLeft: 10 }}>{item?.total_miles}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>
+            {/* <Text style={styles.heading}>
               {`Total Cost (${currencyRate?.currency_code}):`}{' '}
-            </Text>
-            <Text style={styles.cost}>{`${getPriceByRate(
+            </Text> */}
+            <Title label={`Total Cost (${currencyRate?.currency_code}):`} />
+            <Text style={{ marginLeft: 10 }}>{`${getPriceByRate(
               item?.total_fees,
               currencyRate?.currency_rate
             )?.toFixed(2)}`}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Status: </Text>
+            {/* <Text style={styles.heading}>Status: </Text> */}
+            <Title label="Status" />
             <TextHighlight error={PAYMENT_STATUS[item?.payment_status]}>
               {PAYMENT_STATUS[item?.payment_status]}
             </TextHighlight>
@@ -136,7 +150,8 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '60%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',

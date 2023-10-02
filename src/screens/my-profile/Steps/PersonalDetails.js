@@ -39,8 +39,8 @@ const PersonalDetails = ({
         visible={openCountry}
         setOpen={() => setOpenCountry(!openCountry)}
         items={countries.map(c => ({
-          label: `${c.name} (+${c.tel_code})`,
-          value: c.tel_code
+          value: c?.id,
+          label: c?.name
         }))}
         selectedItem={selectedCountry}
         setSelectedItem={value => setSelectedCountry(value)}

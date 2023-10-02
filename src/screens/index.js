@@ -26,4 +26,6 @@ export { default as Shipments } from './shipments';
 export { default as Splash } from './splash';
 export { default as SupportTickets } from './support-tickets';
 export { default as TermsAndConditions } from './terms-and-conditions';
+export { default as TermsAndConditionsStackScreen } from './terms-and-conditions-stack';
+export { default as TicketDetails } from './support-tickets/details';
 export { default as Welcome } from './welcome';

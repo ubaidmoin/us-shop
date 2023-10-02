@@ -17,7 +17,8 @@ import {
   Text,
   SearchBar,
   TextHighlight,
-  ChangeCountry
+  ChangeCountry,
+  Title
 } from 'src/components';
 import { buyForMeList } from 'src/services/api/ApiManager';
 import { getPriceByRate, normalizeDate } from 'src/services/constants';
@@ -108,17 +109,20 @@ const BuyForMe = () => {
                 })
               }>
               <View style={styles.row}>
-                <Text style={styles.heading}>Order ID: </Text>
+                {/* <Text style={styles.heading}>Order ID: </Text> */}
+                <Title label="Order ID" />
                 <Text style={styles.subHeading}>{item?.id}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Date: </Text>
+                {/* <Text style={styles.heading}>Date: </Text> */}
+                <Title label="Date" />
                 <Text style={styles.subHeading}>
                   {normalizeDate(item?.created_at)}
                 </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Product Price: </Text>
+                {/* <Text style={styles.heading}>Product Price: </Text> */}
+                <Title label="Product Price" />
                 <Text style={styles.cost}>{`${
                   item?.get_currency?.currency_code
                 } ${getPriceByRate(
@@ -127,11 +131,13 @@ const BuyForMe = () => {
                 )?.toFixed(2)}`}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Number of Websites: </Text>
+                {/* <Text style={styles.heading}>Number of Websites: </Text> */}
+                <Title label="Number of Websites" />
                 <Text style={styles.subHeading}>{item?.total_websites}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Fees: </Text>
+                {/* <Text style={styles.heading}>Fees: </Text> */}
+                <Title label="Fees" />
                 <Text style={styles.cost}>{`${
                   item?.get_currency?.currency_code
                 } ${getPriceByRate(
@@ -140,10 +146,13 @@ const BuyForMe = () => {
                 )?.toFixed(2)}`}</Text>
               </View>
               <View style={styles.row}>
-                <Text
+                {/* <Text
                   style={
                     styles.heading
-                  }>{`Total Cost (${item?.get_currency?.currency_code}): `}</Text>
+                  }>{`Total Cost (${item?.get_currency?.currency_code}): `}</Text> */}
+                <Title
+                  label={`Total Cost (${item?.get_currency?.currency_code})`}
+                />
                 <Text style={styles.cost}>{`${
                   item?.get_currency?.currency_code
                 } ${getPriceByRate(
@@ -152,13 +161,15 @@ const BuyForMe = () => {
                 )?.toFixed(2)}`}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Payment Scheduled: </Text>
+                {/* <Text style={styles.heading}>Payment Scheduled: </Text> */}
+                <Title label="Payment Scheduled" />
                 <Text style={styles.cost}>{`${
                   100 / parseInt(item?.price_schedule, 0)
                 }`}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Status: </Text>
+                {/* <Text style={styles.heading}>Status: </Text> */}
+                <Title label="Status" />
                 <TextHighlight error={PAYMENT_STATUS[item?.payment_status]}>
                   {PAYMENT_STATUS[item?.payment_status]}
                 </TextHighlight>
@@ -216,7 +227,8 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '60%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',
@@ -252,7 +264,8 @@ const styles = StyleSheet.create({
   cost: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3699ff'
+    color: '#3699ff',
+    marginLeft: 10
   }
 });
 

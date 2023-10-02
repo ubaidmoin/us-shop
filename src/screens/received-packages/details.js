@@ -13,7 +13,14 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Button, Text, SearchBar, TextHighlight, Header } from 'src/components';
+import {
+  Button,
+  Text,
+  SearchBar,
+  TextHighlight,
+  Header,
+  Title
+} from 'src/components';
 import {
   getReceivedPackages,
   viewReceivedPackage
@@ -53,17 +60,20 @@ const ReceivedPackageDetails = () => {
       <View style={styles.container}>
         <View style={[styles.card, { marginBottom: 10 }]}>
           <View style={styles.row}>
-            <Text style={styles.heading}>Tracking ID: </Text>
+            {/* <Text style={styles.heading}>Tracking ID: </Text> */}
+            <Title label="Tracking ID" />
             <Text style={styles.subHeading}>{item.tracking_id}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Received: </Text>
+            {/* <Text style={styles.heading}>Received: </Text> */}
+            <Title label="Received" />
             <Text style={styles.subHeading}>
               {normalizeDate(item?.recieved_date)}
             </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Storage: </Text>
+            {/* <Text style={styles.heading}>Storage: </Text> */}
+            <Title label="Storage" />
             <TextHighlight
               error={
                 PACKAGE_STATUS[item?.package_status] === 'Delivered'
@@ -76,15 +86,18 @@ const ReceivedPackageDetails = () => {
             </TextHighlight>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Origin: </Text>
+            {/* <Text style={styles.heading}>Origin: </Text> */}
+            <Title label="Origin" />
             <Text style={styles.subHeading}>{item?.origin_address}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Dimensions (IN): </Text>
+            {/* <Text style={styles.heading}>Dimensions (IN): </Text> */}
+            <Title label="Dimensions (IN)" />
             <Text style={styles.subHeading}>{item?.package_size}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Status: </Text>
+            {/* <Text style={styles.heading}>Status: </Text> */}
+            <Title label="Status" />
             <TextHighlight
               error={PACKAGE_STATUS[item?.package_status] === 'Disposed'}>
               {PACKAGE_STATUS[item?.package_status]}
@@ -136,7 +149,8 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '60%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',

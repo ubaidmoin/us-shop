@@ -21,26 +21,47 @@ import {
   Header,
   PayNow,
   Label,
-  CheckBox
+  CheckBox,
+  Title
 } from 'src/components';
-import { payNowBillPlz, viewBuyForMe } from 'src/services/api/ApiManager';
+import {
+  getCountries,
+  payNowBillPlz,
+  viewBuyForMe
+} from 'src/services/api/ApiManager';
 import { PACKAGE_STATUS, PAYMENT_STATUS } from 'src/services/enums';
 import moment from 'moment';
 import { getPriceByRate, normalizeDate } from 'src/services/constants';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { settings } from 'src/services/Settings';
+import { actions } from 'react-native-pell-rich-editor';
 
 const BuyForMeDetails = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const id = route?.params?.id;
 
-  const [{ accessToken, currencyRate }, dispatch] = useStateValue();
+  const [{ accessToken, currencyRate, currentUser }, dispatch] =
+    useStateValue();
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState([]);
   const [gallery, setGallery] = useState([]);
   const [showPayNow, setShowPayNow] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+
+  const fetchCountries = async () => {
+    const res = await getCountries(accessToken);
+    if (res && res.data) {
+      dispatch({
+        type: actions.SET_CURRENCY_RATE,
+        payload: res?.data?.find(c => c.id === parseInt(currentUser?.currency))
+      });
+      dispatch({
+        type: actions.SET_COUNTRIES,
+        payload: res?.data?.sort((a, b) => a.name.localeCompare(b.name))
+      });
+    }
+  };
 
   const handleGetBuyForMe = async () => {
     setLoading(true);
@@ -64,6 +85,7 @@ const BuyForMeDetails = () => {
   };
 
   useEffect(() => {
+    fetchCountries();
     handleGetBuyForMe();
   }, []);
 
@@ -75,18 +97,22 @@ const BuyForMeDetails = () => {
         contentContainerStyle={{ alignItems: 'center' }}>
         <View style={[styles.card, { marginBottom: 10 }]}>
           <View style={styles.row}>
-            <Text style={styles.heading}>Order ID: </Text>
+            {/* <Text style={styles.heading}>Order ID: </Text> */}
+            <Title label="Order ID" />
             <Text style={styles.subHeading}>{item?.id}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Date: </Text>
+            {/* <Text style={styles.heading}>Date: </Text> */}
+            <Title label="Date" />
             <Text style={styles.subHeading}>
               {normalizeDate(item?.created_at)}
             </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Product Price: </Text>
-            <Text style={styles.cost}>{`${
+            {/* <Text style={styles.heading}>Product Price: </Text> */}
+            <Title label="Product Price" />
+            {console.log('currencyRate', currencyRate)}
+            <Text style={{ marginLeft: 10 }}>{`${
               currencyRate?.currency_code
             } ${getPriceByRate(
               item?.total_price,
@@ -94,12 +120,14 @@ const BuyForMeDetails = () => {
             )?.toFixed(2)}`}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Number of Websites: </Text>
+            {/* <Text style={styles.heading}>Number of Websites: </Text> */}
+            <Title label="Number of Websites" />
             <Text style={styles.subHeading}>{item?.total_websites}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Fees: </Text>
-            <Text style={styles.cost}>{`${
+            {/* <Text style={styles.heading}>Fees: </Text> */}
+            <Title label="Fees" />
+            <Text style={{ marginLeft: 10 }}>{`${
               currencyRate?.currency_code
             } ${getPriceByRate(
               item?.total_fees,
@@ -107,11 +135,12 @@ const BuyForMeDetails = () => {
             )?.toFixed(2)}`}</Text>
           </View>
           <View style={styles.row}>
-            <Text
+            {/* <Text
               style={
                 styles.heading
-              }>{`Total Cost (${currencyRate?.currency_code}): `}</Text>
-            <Text style={styles.cost}>{`${
+              }>{`Total Cost (${currencyRate?.currency_code}): `}</Text> */}
+            <Title label={`Total Cost (${currencyRate?.currency_code})`} />
+            <Text style={{ marginLeft: 10 }}>{`${
               currencyRate?.currency_code
             } ${getPriceByRate(
               item?.total_fees + item?.total_price,
@@ -119,13 +148,15 @@ const BuyForMeDetails = () => {
             )?.toFixed(2)}`}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Payment Scheduled: </Text>
-            <Text style={styles.cost}>{`${
+            {/* <Text style={styles.heading}>Payment Scheduled: </Text> */}
+            <Title label="Payment Scheduled" />
+            <Text style={{ marginLeft: 10 }}>{`${
               100 / parseInt(item?.price_schedule, 0)
             }`}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Status: </Text>
+            {/* <Text style={styles.heading}>Status: </Text> */}
+            <Title label="Status" />
             <TextHighlight error={PAYMENT_STATUS[item?.payment_status]}>
               {PAYMENT_STATUS[item?.payment_status]}
             </TextHighlight>
@@ -176,6 +207,7 @@ const BuyForMeDetails = () => {
               }
               fill
               loading={loading}
+              disabled={!isChecked}
               onPress={() =>
                 currencyRate?.currency_code === 'MYR'
                   ? handleBillPlz()
@@ -249,7 +281,8 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '60%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',

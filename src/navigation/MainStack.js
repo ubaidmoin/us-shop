@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Register, Login, ResetPassword, Welcome, Splash } from 'src/screens';
+import {
+  Register,
+  Login,
+  ResetPassword,
+  Welcome,
+  Splash,
+  TermsAndConditionsStackScreen
+} from 'src/screens';
 import { NavigationContainer } from '@react-navigation/native';
 import { StateProvider, useStateValue } from 'src/services/state/State';
 import { reducer, actions } from 'src/services/state/Reducer';
@@ -34,6 +41,11 @@ const Navigator = ({ initialRoute }) => {
         name="Welcome"
         component={Welcome}
         options={{ gestureEnabled: false, header: () => null }}
+      />
+      <Stack.Screen
+        name="TermsAndConditionsStackScreen"
+        component={TermsAndConditionsStackScreen}
+        options={{ header: () => null }}
       />
       <Stack.Screen
         name="Dashboard"

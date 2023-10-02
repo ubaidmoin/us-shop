@@ -15,7 +15,7 @@ const ShippingStatusStepper = ({ admin_notes = '', shipping_status = 0 }) => {
         <View style={{ width: '20%' }}>
           <View
             style={{
-              height: 50,
+              height: 60,
               justifyContent: 'center',
               width: '100%'
             }}>
@@ -31,7 +31,7 @@ const ShippingStatusStepper = ({ admin_notes = '', shipping_status = 0 }) => {
           </View>
           <View
             style={{
-              height: 50,
+              height: 60,
               justifyContent: 'center',
               width: '100%'
             }}>
@@ -47,7 +47,7 @@ const ShippingStatusStepper = ({ admin_notes = '', shipping_status = 0 }) => {
           </View>
           <View
             style={{
-              height: 70,
+              height: 80,
               justifyContent: 'center',
               width: '100%'
             }}>
@@ -63,7 +63,7 @@ const ShippingStatusStepper = ({ admin_notes = '', shipping_status = 0 }) => {
           </View>
           <View
             style={{
-              height: 50,
+              height: 60,
               justifyContent: 'center',
               width: '100%'
             }}>
@@ -79,7 +79,7 @@ const ShippingStatusStepper = ({ admin_notes = '', shipping_status = 0 }) => {
           </View>
           <View
             style={{
-              height: 50,
+              height: 60,
               justifyContent: 'center',
               width: '100%'
             }}>
@@ -95,43 +95,118 @@ const ShippingStatusStepper = ({ admin_notes = '', shipping_status = 0 }) => {
           </View>
         </View>
         <View style={{ width: '80%' }}>
-          <View style={{ width: '100%', height: 50 }}>
-            <Text style={[styles.heading, { marginTop: 10, width: '100%' }]}>
+          <View style={{ width: '100%', height: 60 }}>
+            <Text
+              style={[
+                styles.heading,
+                {
+                  marginTop: 10,
+                  width: '100%',
+                  color: shipping_status === 0 ? '#3699ff' : '#000'
+                }
+              ]}>
               Shipment Pending
             </Text>
-            <Text style={[styles.subHeading, { width: '100%' }]}>
+            <Text
+              style={[
+                styles.subHeading,
+                {
+                  width: '100%',
+                  color: shipping_status === 0 ? '#3699ff' : '#000'
+                }
+              ]}>
               In Overseas Warehouse
             </Text>
           </View>
-          <View style={{ width: '100%', height: 50 }}>
-            <Text style={[styles.heading, { marginTop: 10, width: '100%' }]}>
+          <View style={{ width: '100%', height: 60 }}>
+            <Text
+              style={[
+                styles.heading,
+                {
+                  marginTop: 10,
+                  width: '100%',
+                  color: shipping_status === 1 ? '#3699ff' : '#000'
+                }
+              ]}>
               Departed
             </Text>
-            <Text style={[styles.subHeading, { width: '100%' }]}>
+            <Text
+              style={[
+                styles.subHeading,
+                {
+                  width: '100%',
+                  color: shipping_status === 1 ? '#3699ff' : '#000'
+                }
+              ]}>
               Shipment left your overseas locker
             </Text>
           </View>
-          <View style={{ width: '100%', height: 70 }}>
-            <Text style={[styles.heading, { marginTop: 10, width: '100%' }]}>
+          <View style={{ width: '100%', height: 80 }}>
+            <Text
+              style={[
+                styles.heading,
+                {
+                  marginTop: 10,
+                  width: '100%',
+                  color: shipping_status === 2 ? '#3699ff' : '#000'
+                }
+              ]}>
               Transit
             </Text>
-            <Text style={[styles.subHeading, { width: '100%' }]}>
+            <Text
+              style={[
+                styles.subHeading,
+                {
+                  width: '100%',
+                  color: shipping_status === 2 ? '#3699ff' : '#000'
+                }
+              ]}>
               Pending available connecting flight, Custom & airport clearance
             </Text>
           </View>
-          <View style={{ width: '100%', height: 50 }}>
-            <Text style={[styles.heading, { marginTop: 10, width: '100%' }]}>
+          <View style={{ width: '100%', height: 60 }}>
+            <Text
+              style={[
+                styles.heading,
+                {
+                  marginTop: 10,
+                  width: '100%',
+                  color: shipping_status === 3 ? '#3699ff' : '#000'
+                }
+              ]}>
               Shipment Dispatch
             </Text>
-            <Text style={[styles.subHeading, { width: '100%' }]}>
+            <Text
+              style={[
+                styles.subHeading,
+                {
+                  width: '100%',
+                  color: shipping_status === 3 ? '#3699ff' : '#000'
+                }
+              ]}>
               Out for delivery
             </Text>
           </View>
-          <View style={{ width: '100%', height: 50 }}>
-            <Text style={[styles.heading, { marginTop: 10, width: '100%' }]}>
+          <View style={{ width: '100%', height: 60 }}>
+            <Text
+              style={[
+                styles.heading,
+                {
+                  marginTop: 10,
+                  width: '100%',
+                  color: shipping_status === 4 ? '#3699ff' : '#000'
+                }
+              ]}>
               Delivered
             </Text>
-            <Text style={[styles.subHeading, { width: '100%' }]}>
+            <Text
+              style={[
+                styles.subHeading,
+                {
+                  width: '100%',
+                  color: shipping_status === 4 ? '#3699ff' : '#000'
+                }
+              ]}>
               Shipment delivered
             </Text>
           </View>
@@ -158,12 +233,12 @@ const styles = StyleSheet.create({
     padding: 10
   },
   heading: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
     width: '40%'
   },
   subHeading: {
-    fontSize: 14,
+    fontSize: 12,
     width: '60%'
   },
   row: {

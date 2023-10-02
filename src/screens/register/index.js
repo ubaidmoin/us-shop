@@ -4,13 +4,16 @@ import {
   View,
   Image,
   Platform,
-  ImageBackground
+  ImageBackground,
+  Alert
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
 import { TextButton, Button, Text } from 'src/components';
 import { AccountDetails, PersonalDetails, MailingDetails } from './Steps';
+import { countryList } from 'src/services/constants';
+import { register } from 'src/services/api/ApiManager';
 
 const genders = [
   { label: 'Male', value: 'm' },
@@ -19,17 +22,81 @@ const genders = [
 
 const Register = () => {
   const navigation = useNavigation();
-  const [{ signUpFirstTime }, dispatch] = useStateValue();
+  const [{}, dispatch] = useStateValue();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [gender, setGender] = useState();
+  const [country, setCountry] = useState();
+  const [openCountry, setOpenCountry] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [businessName, setBusinessName] = useState('');
+  const [address, setAddress] = useState('');
+  const [state, setState] = useState('');
+  const [city, setCity] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [mailingCountry, setMailingCountry] = useState();
+  const [openMailingCountry, setOpenMailingCountry] = useState(false);
+  const [agreeTerms, setAgreeTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(0);
 
-  const handleNext = () => setActive(active + 1);
+  const handleNext = () => {
+    if (active === 0) {
+      if (!email || !password || !confirmPassword) {
+        return alert('Please fill all the fields');
+      }
+      if (password !== confirmPassword) {
+        return alert('Passwords do not match');
+      }
+    } else if (active === 1) {
+      if (!fullName || !gender || !country || !phoneNumber) {
+        return alert('Please fill all the fields');
+      }
+    } else {
+      if (
+        !address ||
+        !state ||
+        !city ||
+        !postalCode ||
+        !mailingCountry ||
+        !agreeTerms
+      ) {
+        return alert('Please fill all the fields');
+      }
+    }
+    setActive(active + 1);
+  };
   const handlePrevious = () => setActive(active - 1);
 
-  const handleSubmit = () => {
-    navigation.navigate('Login');
+  const handleSubmit = async () => {
+    setLoading(true);
+    const data = {
+      email,
+      password,
+      password_confirmation: confirmPassword,
+      name: fullName,
+      gender: gender === 'm' ? 'Male' : 'Female',
+      lscode: country?.substring(1),
+      phone: phoneNumber,
+      business_country: mailingCountry,
+      street_address: address,
+      state,
+      city,
+      postal_code: postalCode
+    };
+    console.log(data);
+    const response = await register(data);
+    if (response && response.data) {
+      Alert.alert(
+        'Success',
+        'Account has been created successfully. You may login with the email and password.'
+      );
+      navigation.navigate('Login');
+    }
+    console.log('response', response.data);
+    setLoading(false);
   };
 
   return (
@@ -87,18 +154,62 @@ const Register = () => {
           </View>
         </View>
         {active === 0 ? (
-          <AccountDetails />
+          <AccountDetails
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            confirmPassword={confirmPassword}
+            setConfirmPassword={setConfirmPassword}
+          />
         ) : active === 1 ? (
-          <PersonalDetails radioOptions={genders} />
+          <PersonalDetails
+            fullName={fullName}
+            setFullName={setFullName}
+            gender={gender}
+            handleGenderChange={value => setGender(value)}
+            openCountry={openCountry}
+            setOpenCountry={setOpenCountry}
+            selectedCountry={country}
+            setSelectedCountry={setCountry}
+            radioOptions={genders}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+          />
         ) : (
-          <MailingDetails />
+          <MailingDetails
+            businessName={businessName}
+            setBusinessName={setBusinessName}
+            address={address}
+            setAddress={setAddress}
+            state={state}
+            setState={setState}
+            city={city}
+            setCity={setCity}
+            postalCode={postalCode}
+            setPostalCode={setPostalCode}
+            countries={countryList}
+            handleOpenCountry={setOpenMailingCountry}
+            isCountryVisible={openMailingCountry}
+            selectedCountry={mailingCountry}
+            setSelectedCountry={setMailingCountry}
+            agreeTerms={agreeTerms}
+            setAgreeTerms={setAgreeTerms}
+          />
         )}
         <Button
           label={active === 2 ? 'Submit' : 'Next'}
           onPress={active === 2 ? handleSubmit : handleNext}
+          disabled={active === 2 && !agreeTerms}
+          loading={loading}
         />
         {active !== 0 && (
-          <Button label="Previous" onPress={handlePrevious} fill={false} />
+          <Button
+            label="Previous"
+            onPress={handlePrevious}
+            fill={false}
+            loading={loading}
+          />
         )}
         <View style={styles.footer}>
           <Text style={styles.subHeading}>Already have an account?</Text>
@@ -197,11 +308,11 @@ const styles = StyleSheet.create({
   },
   stepText: {
     fontWeight: 'bold',
-    fontSize: 18
+    fontSize: 14
   },
   stepTextActive: {
     fontWeight: '500',
-    fontSize: 16,
+    fontSize: 14,
     color: '#1bc5bd'
   },
   stepTitle: {

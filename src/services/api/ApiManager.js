@@ -14,6 +14,57 @@ export const login = ({ email, password }) => {
   }
 };
 
+export const register = data => {
+  try {
+    const response = postDataLogin(
+      `${s.auth.register
+        .replace('$[email]', data.email)
+        .replace('$[password]', data.password)
+        .replace('$[name]', data.name)
+        .replace('$[gender]', data.gender)
+        .replace('$[lscode]', data.lscode)
+        .replace('$[phone]', data.phone)
+        .replace('$[street_address]', data.street_address)
+        .replace('$[state]', data.state)
+        .replace('$[city]', data.city)
+        .replace('$[postal_code]', data.postal_code)
+        .replace('$[business_country]', data.business_country)
+        .replace('$[password_confirmation]', data.password_confirmation)}`,
+      data
+    );
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getPreferences = token => {
+  try {
+    const response = getData(
+      `${s.auth.preferences.replace('$[token]', token)}`
+    );
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const updatePreferences = (token, data) => {
+  try {
+    const response = postData(
+      `${s.auth.updatePreferences
+        .replace('$[token]', token)
+        .replace('$[language]', data.language)
+        .replace('$[currency]', data.currency)
+        .replace('$[country]', data.country)}`,
+      null
+    );
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const uploadFile = (token, data) => {
   try {
     const response = postFormData(
@@ -29,6 +80,17 @@ export const uploadFile = (token, data) => {
 export const getShops = token => {
   try {
     const response = getData(`${s.shops.details.replace('$[token]', token)}`);
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getDashboardDetails = token => {
+  try {
+    const response = getData(
+      `${s.dashboard.dashboard.replace('$[token]', token)}`
+    );
     return response;
   } catch (error) {
     return error;

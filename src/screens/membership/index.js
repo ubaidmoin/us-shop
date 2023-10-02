@@ -47,6 +47,8 @@ const Membership = () => {
             isCurrent={currentUser?.membership === '1'}
             isFree
             isUpgradeable={currentUser?.membership !== '1'}
+            backgroundColor="#C0C0C0"
+            color="#333333"
           />
         </View>
         <View style={{ marginTop: 20 }}>
@@ -64,6 +66,8 @@ const Membership = () => {
             delicateFee="$40"
             isUpgradeable={currentUser?.membership !== '2'}
             isCurrent={currentUser?.membership === '2'}
+            backgroundColor="#FFD700"
+            color="#000080"
           />
         </View>
         <View style={{ marginTop: 20 }}>
@@ -81,6 +85,8 @@ const Membership = () => {
             delicateFee="Free"
             isUpgradeable={currentUser?.membership !== '3'}
             isCurrent={currentUser?.membership === '3'}
+            backgroundColor="#E5E4E2"
+            color="#000080"
           />
         </View>
       </ScrollView>
@@ -93,7 +99,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 20,
     paddingHorizontal: 20,
-    backgroundColor: '#e7e9f0',
+    backgroundColor: '#fff',
     paddingBottom: 50
   },
   contentContainer: {

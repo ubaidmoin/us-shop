@@ -18,6 +18,7 @@ import { useStateValue } from 'src/services/state/State';
 import { actions } from 'src/services/state/Reducer';
 import InvoicesStack from './StackNavigations/InvoicesStack';
 import Membership from 'src/screens/membership';
+import SupportTicketsStack from './StackNavigations/SupportTicketsStack';
 
 const Drawer = createDrawerNavigator();
 
@@ -53,7 +54,7 @@ const Navigator = () => {
       <Drawer.Screen name="CreateTicket" component={CreateTicket} />
       <Drawer.Screen name="Invoices" component={InvoicesStack} />
       <Drawer.Screen name="MyProfile" component={MyProfile} />
-      <Drawer.Screen name="SupportTickets" component={SupportTickets} />
+      <Drawer.Screen name="SupportTickets" component={SupportTicketsStack} />
       <Drawer.Screen name="ProhibitedItems" component={ProhibitedItems} />
       <Drawer.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
       <Drawer.Screen name="TermsAndConditions" component={TermsAndConditions} />

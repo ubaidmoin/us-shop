@@ -17,10 +17,15 @@ import {
   Text,
   SearchBar,
   TextHighlight,
-  ChangeCountry
+  ChangeCountry,
+  Title
 } from 'src/components';
 import { vipServices } from 'src/services/api/ApiManager';
-import { getPriceByRate, normalizeDate } from 'src/services/constants';
+import {
+  getPriceByRate,
+  normalizeDate,
+  normalizeTime
+} from 'src/services/constants';
 import { PAYMENT_STATUS } from 'src/services/enums';
 
 const BookVIPService = () => {
@@ -34,7 +39,6 @@ const BookVIPService = () => {
   const handleGetVipServices = async () => {
     setLoading(true);
     const response = await vipServices(accessToken);
-    console.log(response.data);
     if (response.status === 200) {
       setList(response?.data?.data);
       setServices(response?.data?.data);
@@ -94,40 +98,47 @@ const BookVIPService = () => {
                 })
               }>
               <View style={styles.row}>
-                <Text style={styles.heading}>Date: </Text>
+                {/* <Text style={styles.heading}>Date: </Text> */}
+                <Title label="Date" />
                 <Text style={styles.subHeading}>
                   {normalizeDate(item?.created_at)}
                 </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Shopping Date: </Text>
+                {/* <Text style={styles.heading}>Shopping Date: </Text> */}
+                <Title label="Shopping Date" />
                 <Text style={styles.subHeading}>
                   {normalizeDate(item?.service_date)}
                 </Text>
               </View>
-              <View style={styles.row}>
-                <Text style={styles.heading}>Shopping Time: </Text>
+              <View style={[styles.row, { alignItems: 'flex-start' }]}>
+                {/* <Text style={styles.heading}>Shopping Time (24h): </Text> */}
+                <Title label="Shopping Time (24h)" />
                 <Text style={styles.cost}>{item?.service_time}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Hours: </Text>
+                {/* <Text style={styles.heading}>Hours: </Text> */}
+                <Title label="Hours" />
                 <Text style={styles.subHeading}>{item?.total_hours}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Miles: </Text>
+                {/* <Text style={styles.heading}>Miles: </Text> */}
+                <Title label="Miles" />
                 <Text style={styles.cost}>{item?.total_miles}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>
+                {/* <Text style={styles.heading}>
                   {`Total Cost (${currencyRate?.currency_code}):`}{' '}
-                </Text>
+                </Text> */}
+                <Title label={`Total Cost (${currencyRate?.currency_code}):`} />
                 <Text style={styles.cost}>{`${getPriceByRate(
                   item?.total_fees,
                   currencyRate?.currency_rate
                 )?.toFixed(2)}`}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Status: </Text>
+                {/* <Text style={styles.heading}>Status: </Text> */}
+                <Title label="Status" />
                 <TextHighlight error={PAYMENT_STATUS[item?.payment_status]}>
                   {PAYMENT_STATUS[item?.payment_status]}
                 </TextHighlight>
@@ -185,7 +196,8 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '60%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',
@@ -195,11 +207,11 @@ const styles = StyleSheet.create({
   },
   newShipmentContainer: {
     position: 'absolute',
-    bottom: 70,
-    right: 70,
+    bottom: 110,
+    right: 20,
     backgroundColor: '#1584F7',
-    width: 50,
-    height: 50,
+    width: 70,
+    height: 70,
     borderRadius: 35,
     alignItems: 'center',
     justifyContent: 'center',
@@ -214,14 +226,16 @@ const styles = StyleSheet.create({
   },
   newShipmentText: {
     width: '100%',
-    fontSize: 11,
+    fontSize: 10,
     color: '#fff',
     textAlign: 'center'
   },
   cost: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3699ff'
+    color: '#3699ff',
+    width: '60%',
+    marginLeft: 10
   }
 });
 

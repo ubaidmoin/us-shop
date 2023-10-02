@@ -16,12 +16,18 @@ const MembershipCard = ({
   repackingFee = '$20',
   advacingPackingFee = '$25',
   delicateFee = '$',
-  isUpgradeable = false
+  isUpgradeable = false,
+  backgroundColor = '#C0C0C0',
+  color = '#fff'
 }) => {
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor, shadowColor: backgroundColor }
+      ]}>
       <View style={styles.row}>
-        <Text style={styles.heading}>{name}</Text>
+        <Text style={[styles.heading, { color }]}>{name}</Text>
         {isCurrent && (
           <View style={styles.current}>
             <Text style={styles.currentText}>Current</Text>
@@ -29,49 +35,82 @@ const MembershipCard = ({
         )}
       </View>
       <View style={styles.price}>
-        <Text style={styles.heading}>{isFree ? 'Free' : price}</Text>
+        <Text style={[styles.heading, { color }]}>
+          {isFree ? 'Free' : price}
+        </Text>
       </View>
-      <View style={styles.card}>
-        <Text style={styles.text}>{`${freeStorage} FREE Storage`}</Text>
-        <Text style={styles.subText}>
+      <View style={[styles.card, { backgroundColor }]}>
+        <Text
+          style={[
+            styles.text,
+            { color }
+          ]}>{`${freeStorage} FREE Storage`}</Text>
+        <Text style={[styles.subText, { color }]}>
           No charges for storing your item in our warehouse
         </Text>
-        <Text style={styles.text}>{`$${storageFee}/Day Storage Fees`}</Text>
-        <Text style={styles.subText}>Storage fees after 30 days</Text>
-        <Text style={styles.text}>{`${photoRequestFee} Photo Request`}</Text>
-        <Text style={styles.subText}>Get photo of the item you ordered</Text>
-        <Text style={styles.text}>{`${boxInspectionFee} Box Inspection`}</Text>
-        <Text style={styles.subText}>
+        <Text
+          style={[
+            styles.text,
+            { color }
+          ]}>{`$${storageFee}/Day Storage Fees`}</Text>
+        <Text style={[styles.subText, { color }]}>
+          Storage fees after 30 days
+        </Text>
+        <Text
+          style={[
+            styles.text,
+            { color }
+          ]}>{`${photoRequestFee} Photo Request`}</Text>
+        <Text style={[styles.subText, { color }]}>
+          Get photo of the item you ordered
+        </Text>
+        <Text
+          style={[
+            styles.text,
+            { color }
+          ]}>{`${boxInspectionFee} Box Inspection`}</Text>
+        <Text style={[styles.subText, { color }]}>
           Our team insepct the item you ordered
         </Text>
         <Text
-          style={styles.text}>{`${returningItemFee} for Returning Item`}</Text>
-        <Text style={styles.subText}>
+          style={[
+            styles.text,
+            { color }
+          ]}>{`${returningItemFee} for Returning Item`}</Text>
+        <Text style={[styles.subText, { color }]}>
           Return item if you're not satisfied with the seller (For USA)
         </Text>
         <Text
-          style={
-            styles.text
-          }>{`${sellerTrackingNumberRequest} Seller Tracking Number Request`}</Text>
-        <Text style={styles.subText}>
+          style={[
+            styles.text,
+            { color }
+          ]}>{`${sellerTrackingNumberRequest} Seller Tracking Number Request`}</Text>
+        <Text style={[styles.subText, { color }]}>
           Tracking number from website to warehouse (USA)
         </Text>
         <Text
-          style={
-            styles.text
-          }>{`${repackingFee} Repacking (20 Tracking Numbers)`}</Text>
-        <Text style={styles.subText}>Open box and combine all parcels</Text>
+          style={[
+            styles.text,
+            { color }
+          ]}>{`${repackingFee} Repacking (20 Tracking Numbers)`}</Text>
+        <Text style={[styles.subText, { color }]}>
+          Open box and combine all parcels
+        </Text>
         <Text
-          style={styles.text}>{`${advacingPackingFee} Advancing Packing`}</Text>
-        <Text style={styles.subText}>
+          style={[
+            styles.text,
+            { color }
+          ]}>{`${advacingPackingFee} Advancing Packing`}</Text>
+        <Text style={[styles.subText, { color }]}>
           Packing with air pillow / paper / cardboards so the boxes filled and
           sturdy (for 10 Tracking Numbers)
         </Text>
         <Text
-          style={
-            styles.text
-          }>{`${delicateFee} Delicate and Extra Care Repack`}</Text>
-        <Text style={styles.subText}>
+          style={[
+            styles.text,
+            { color }
+          ]}>{`${delicateFee} Delicate and Extra Care Repack`}</Text>
+        <Text style={[styles.subText, { color }]}>
           Bubble wrap each item such as plates,glasses, bicycle, guitar etc
         </Text>
       </View>
@@ -98,7 +137,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fff',
-    borderRadius: 10
+    borderRadius: 10,
+    shadowOffset: {
+      width: 2,
+      height: 3
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5
   },
   row: {
     flexDirection: 'row',

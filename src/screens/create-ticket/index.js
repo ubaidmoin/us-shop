@@ -21,26 +21,50 @@ import {
   RichTextInput,
   ImageBrowser
 } from 'src/components';
-import { createSupportTickets } from 'src/services/api/ApiManager';
+import { createSupportTickets, uploadFile } from 'src/services/api/ApiManager';
 
 const CreateTicket = () => {
   const navigation = useNavigation();
   const [{ accessToken }, dispatch] = useStateValue();
   let richText = useRef();
   const [details, setDetails] = useState('');
-  const [image, setImage] = useState('');
+  const [image, setImage] = useState([]);
+  const [fileNames, setFileNames] = useState([]);
   const [subject, setSubject] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const upload = async () => {
+    if (image.length > 0) {
+      const files = [];
+      image.map(async item => {
+        const formData = new FormData();
+        formData.append('file', {
+          uri: item?.uri,
+          type: item?.type,
+          name: item?.fileName
+        });
+        const fileName = await uploadFile(accessToken, formData);
+        console.log('fileName', fileName?.data?.name);
+        files.push(fileName?.data?.name || '');
+      });
+      setFileNames(files);
+    }
+  };
+
+  useEffect(() => {
+    upload();
+  }, [image]);
 
   const handleCreateTicket = async () => {
     setLoading(true);
     const data = {
       support_message: details,
-      file: image,
+      file: fileNames.join(',') || [],
       support_subject: subject
     };
+    console.log(data);
     const res = await createSupportTickets(accessToken, data);
-    // console.log(res.data);
+    console.log(res);
     if (res && res.data && res.data.message) {
       Alert.alert('Ticket successfully created', `${res.data.message}`);
       navigation.goBack();

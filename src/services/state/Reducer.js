@@ -6,7 +6,8 @@ export const actions = {
   SET_COUNTRIES: 'SET_COUNTRIES',
   SET_CURRENCY_RATE: 'SET_CURRENCY_RATE',
   SET_SHOP: 'SET_SHOP',
-  SET_NOTIFICATIONS: 'SET_NOTIFICATIONS'
+  SET_NOTIFICATIONS: 'SET_NOTIFICATIONS',
+  SET_SHOPS: 'SET_SHOPS'
 };
 
 export const reducer = (state, action) => {
@@ -50,6 +51,11 @@ export const reducer = (state, action) => {
       return {
         ...state,
         notifications: action.payload
+      };
+    case actions.SET_SHOPS:
+      return {
+        ...state,
+        shops: action.payload
       };
     default:
       return state;

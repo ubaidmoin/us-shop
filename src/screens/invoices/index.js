@@ -18,7 +18,8 @@ import {
   Text,
   SearchBar,
   TextHighlight,
-  ChangeCountry
+  ChangeCountry,
+  Title
 } from 'src/components';
 import { invoices } from 'src/services/api/ApiManager';
 import { normalizeDate } from 'src/services/constants';
@@ -84,29 +85,34 @@ const Invoices = () => {
           renderItem={({ item, index }) => (
             <TouchableOpacity style={styles.card}>
               <View style={styles.row}>
-                <Text style={styles.heading}>Date: </Text>
+                {/* <Text style={styles.heading}>Date: </Text> */}
+                <Title label="Date" />
                 <Text style={styles.subHeading}>
                   {normalizeDate(item?.created_at)}
                 </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Title: </Text>
+                {/* <Text style={styles.heading}>Title: </Text> */}
+                <Title label="Title" />
                 <Text style={styles.subHeading}>{item?.title}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>
+                {/* <Text style={styles.heading}>
                   {`Amount (${currencyRate?.currency_code}):`}{' '}
-                </Text>
+                </Text> */}
+                <Title label={`Amount (${currencyRate?.currency_code}):`} />
                 <Text style={styles.subHeading}>{item?.amount}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Attachment: </Text>
+                {/* <Text style={styles.heading}>Attachment: </Text> */}
+                <Title label="Attachment" />
                 <Text style={styles.cost}>
                   {item?.attachments ? 'Yes' : 'No'}
                 </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Status: </Text>
+                {/* <Text style={styles.heading}>Status: </Text> */}
+                <Title label="Status" />
                 <TextHighlight error={PAYMENT_STATUS[item?.payment_status]}>
                   {PAYMENT_STATUS[item?.payment_status]}
                 </TextHighlight>
@@ -158,7 +164,8 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '60%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',
@@ -169,7 +176,8 @@ const styles = StyleSheet.create({
   cost: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3699ff'
+    color: '#3699ff',
+    marginLeft: 10
   }
 });
 

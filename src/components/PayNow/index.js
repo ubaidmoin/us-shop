@@ -166,12 +166,12 @@ const PayNow = ({
         </View>
       </View>
       <View style={{ position: 'absolute', bottom: 30, left: 20, right: 20 }}>
-        <CheckBox
+        {/* <CheckBox
           message="I agree to the "
           messageHighlight="terms & conditions"
           checked={!disabled}
           setChecked={setIsChecked}
-        />
+        /> */}
         <Button
           label="Pay Now"
           fill

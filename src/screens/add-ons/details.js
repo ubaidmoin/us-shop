@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {
-  StyleSheet,
-  View,
-  Image,
-  FlatList,
-  ImageBackground,
-  Platform,
-  TouchableOpacity
-} from 'react-native';
+import { StyleSheet, View, Linking, Alert, Modal } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Button, Text, SearchBar, TextHighlight, Header } from 'src/components';
 import {
+  Button,
+  Text,
+  SearchBar,
+  TextHighlight,
+  Header,
+  Title,
+  PayNow,
+  CheckBox
+} from 'src/components';
+import {
+  payNowBillPlz,
   viewAddOns,
   viewBuyForMe,
   viewVipServices
@@ -19,11 +21,14 @@ import {
 import { PACKAGE_STATUS, PAYMENT_STATUS } from 'src/services/enums';
 import moment from 'moment';
 import { getPriceByRate, normalizeDate } from 'src/services/constants';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 const AddOnsDetails = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const id = route?.params?.id;
+  const [showPayNow, setShowPayNow] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   const [{ accessToken, currencyRate }, dispatch] = useStateValue();
   const [loading, setLoading] = useState(false);
@@ -35,6 +40,21 @@ const AddOnsDetails = () => {
     console.log(response?.data);
     if (response.status === 200) {
       setItem(response?.data);
+    }
+    setLoading(false);
+  };
+
+  const handleBillPlz = async () => {
+    setLoading(true);
+    const response = await payNowBillPlz(accessToken, item?.order?.id, 'addon');
+    console.log(response);
+    if (response.status === 200) {
+      Linking.openURL(response?.data?.url);
+    } else {
+      Alert.alert(
+        'Error',
+        'Unfortunately, we are unable to process your payment at the moment. Please try again later.'
+      );
     }
     setLoading(false);
   };
@@ -51,20 +71,23 @@ const AddOnsDetails = () => {
       <View style={styles.container}>
         <View style={[styles.card, { marginBottom: 10 }]}>
           <View style={styles.row}>
-            <Text style={styles.heading}>ID: </Text>
+            {/* <Text style={styles.heading}>ID: </Text> */}
+            <Title label="ID" />
             <Text style={styles.subHeading}>{order?.id}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Date: </Text>
+            {/* <Text style={styles.heading}>Date: </Text> */}
+            <Title label="Date" />
             <Text style={styles.subHeading}>
               {normalizeDate(order?.created_at)}
             </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>
+            {/* <Text style={styles.heading}>
               Amount ({currencyRate?.currency_code}):{' '}
-            </Text>
-            <Text style={styles.cost}>
+            </Text> */}
+            <Title label={`Amount (${currencyRate?.currency_code})`} />
+            <Text style={{ marginLeft: 10 }}>
               {getPriceByRate(
                 order?.total_fees,
                 currencyRate?.currency_rate
@@ -72,13 +95,15 @@ const AddOnsDetails = () => {
             </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Payment: </Text>
+            {/* <Text style={styles.heading}>Payment: </Text> */}
+            <Title label="Payment" />
             <TextHighlight error={PAYMENT_STATUS[order?.payment_status]}>
               {PAYMENT_STATUS[order?.payment_status]}
             </TextHighlight>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Status: </Text>
+            {/* <Text style={styles.heading}>Status: </Text> */}
+            <Title label="Status" />
             <TextHighlight>{'Processing'}</TextHighlight>
           </View>
         </View>
@@ -89,24 +114,74 @@ const AddOnsDetails = () => {
             {addons?.map((addon, index) => (
               <>
                 <View style={styles.row}>
-                  <Text style={styles.heading}>Tracking #: </Text>
+                  {/* <Text style={styles.heading}>Tracking #: </Text> */}
+                  <Title label="Tracking #" />
                   <Text style={styles.subHeading}>{addon?.item}</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={styles.heading}>Received Date: </Text>
+                  {/* <Text style={styles.heading}>Received Date: </Text> */}
+                  <Title label="Received Date" />
                   <Text style={styles.subHeading}>
                     {normalizeDate(addon?.date || new Date())}
                   </Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={styles.heading}>Service: </Text>
+                  {/* <Text style={styles.heading}>Service: </Text> */}
+                  <Title label="Service" />
                   <Text style={styles.subHeading}>{addon?.service}</Text>
                 </View>
               </>
             ))}
           </View>
         </View>
+        {PAYMENT_STATUS[order?.payment_status] === 'Payment Pending' && (
+          <View style={{ width: '100%', marginTop: 20, paddingBottom: 120 }}>
+            {currencyRate?.currency_code === 'MYR' && (
+              <CheckBox
+                message="I agree to the "
+                messageHighlight="terms & conditions"
+                checked={isChecked}
+                setChecked={setIsChecked}
+              />
+            )}
+            <Button
+              label={
+                currencyRate?.currency_code === 'MYR'
+                  ? 'Pay Now'
+                  : 'Pay With Card'
+              }
+              fill
+              loading={loading}
+              disabled={!isChecked}
+              onPress={() =>
+                currencyRate?.currency_code === 'MYR'
+                  ? handleBillPlz()
+                  : setShowPayNow(true)
+              }
+            />
+          </View>
+        )}
       </View>
+      <Modal
+        visible={showPayNow}
+        transparent
+        style={styles.modal}
+        animationType="slide">
+        <TouchableWithoutFeedback onPress={() => setShowPayNow(false)}>
+          <View style={styles.modalOverlay} />
+        </TouchableWithoutFeedback>
+        <View style={styles.messageBox}>
+          <PayNow
+            id={item?.id}
+            service="buyforme"
+            showPayNow={showPayNow}
+            setShowPayNow={setShowPayNow}
+            reload={handleGetAddOns}
+            disabled={!isChecked}
+            setIsChecked={setIsChecked}
+          />
+        </View>
+      </Modal>
     </>
   );
 };
@@ -151,7 +226,8 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '60%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',
@@ -189,6 +265,37 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#fff',
     textAlign: 'center'
+  },
+  modal: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '50%',
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  messageBox: {
+    width: '90%',
+    height: '60%',
+    backgroundColor: '#fff',
+    shadowColor: '#1584F7',
+    shadowOffset: {
+      width: 2,
+      height: 3
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 13,
+    borderRadius: 13,
+    elevation: 5,
+    alignSelf: 'center',
+    marginTop: '20%'
+  },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)'
   }
 });
 

@@ -7,10 +7,12 @@ module.exports = {
       {
         parser: 'babel',
         trailingComma: 'none',
-        arrowParens: 'avoid'
+        arrowParens: 'avoid',
+        'no-inline-styles': false
       }
     ],
     'comma-dangle': 'off',
-    'react-hooks/exhaustive-deps': 0
+    'react-hooks/exhaustive-deps': 0,
+    'react-native/no-inline-styles': 0
   }
 };

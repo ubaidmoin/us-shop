@@ -17,7 +17,8 @@ import {
   Text,
   SearchBar,
   TextHighlight,
-  ChangeCountry
+  ChangeCountry,
+  Title
 } from 'src/components';
 import { getReceivedPackages } from 'src/services/api/ApiManager';
 import { PACKAGE_STATUS, SHIPPING_STATUS } from 'src/services/enums';
@@ -106,17 +107,17 @@ const ReceivedPackages = () => {
                 })
               }>
               <View style={styles.row}>
-                <Text style={styles.heading}>Tracking ID: </Text>
+                <Title label="Tracking ID" />
                 <Text style={styles.subHeading}>{item.tracking_id}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Received: </Text>
+                <Title label="Receivec" />
                 <Text style={styles.subHeading}>
                   {normalizeDate(item?.recieved_date)}
                 </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Storage: </Text>
+                <Title label="Storage" />
                 <TextHighlight
                   error={
                     PACKAGE_STATUS[item?.package_status] === 'Delivered'
@@ -129,15 +130,15 @@ const ReceivedPackages = () => {
                 </TextHighlight>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Origin: </Text>
+                <Title label="Origin" />
                 <Text style={styles.subHeading}>{item?.origin_country}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Dimensions (IN): </Text>
+                <Title label="Dimensions (IN)" />
                 <Text style={styles.subHeading}>{item?.package_size}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Status: </Text>
+                <Title label="Status" />
                 <TextHighlight
                   error={PACKAGE_STATUS[item?.package_status] === 'Disposed'}>
                   {PACKAGE_STATUS[item?.package_status]}
@@ -196,7 +197,8 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '50%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',
@@ -225,7 +227,7 @@ const styles = StyleSheet.create({
   },
   newShipmentText: {
     width: '100%',
-    fontSize: 11,
+    fontSize: 10,
     color: '#fff',
     textAlign: 'center'
   }

@@ -26,3 +26,4 @@ export { default as Text } from './Text';
 export { default as TextInput } from './TextInput';
 export { default as TextButton } from './TextButton';
 export { default as TextHighlight } from './TextHighlight';
+export { default as Title } from './Title';

@@ -30,9 +30,9 @@ const Login = () => {
     } else {
       setLoading(true);
       const res = await login({ email, password });
-      console.log(res);
+      console.log('login', res.data);
       if (res && res.data) {
-        const { welcome_tour } = res.data;
+        const { language, currency } = res.data;
         await setUserInfo(res.data);
         dispatch({
           type: actions.SET_CURRENT_USER,
@@ -42,11 +42,11 @@ const Login = () => {
           type: actions.SET_ACCESS_TOKEN,
           payload: res.data.api_token
         });
-        // if (welcome_tour) {
-        //   navigation.navigate('Welcome');
-        // } else {
-        navigation.navigate('Dashboard');
-        // }
+        if (!language || !currency) {
+          navigation.navigate('Welcome');
+        } else {
+          navigation.navigate('Dashboard');
+        }
       } else {
         alert('Invalid email or password');
       }

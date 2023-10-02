@@ -36,13 +36,17 @@ const NotificationsTickets = () => {
                     notifications?.tickets_count - 1 === index ? 130 : 10
                 }
               ]}
-              onPress={() => {}}>
+              onPress={() =>
+                navigation.navigate('TicketDetails', {
+                  id: item.id
+                })
+              }>
               <View style={styles.row}>
                 <View style={styles.icon}>
                   <FontAwesome name="dropbox" color="'#3699ff'" size={25} />
                 </View>
                 <View style={styles.notification}>
-                  <Text style={styles.heading}>{item?.tracking_id}</Text>
+                  <Text style={styles.heading}>{`#${item.id}`}</Text>
                   <Text style={styles.subHeading}>
                     {humanDifferenceDate(item?.updated_at)}
                   </Text>

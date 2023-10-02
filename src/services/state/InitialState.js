@@ -6,5 +6,6 @@ export const initialState = {
   countries: [],
   currencyRate: 1,
   shop: '',
-  notifications: []
+  notifications: [],
+  shops: []
 };

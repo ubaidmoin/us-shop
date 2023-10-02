@@ -17,7 +17,8 @@ import {
   Text,
   SearchBar,
   TextHighlight,
-  ChangeCountry
+  ChangeCountry,
+  Title
 } from 'src/components';
 import { getShipments } from 'src/services/api/ApiManager';
 import { SHIPPING_STATUS, SHIPPING_TYPE } from 'src/services/enums';
@@ -95,29 +96,36 @@ const Shipments = () => {
                 })
               }>
               <View style={styles.row}>
-                <Text style={styles.heading}>Type: </Text>
+                {/* <Text style={styles.heading}>Type: </Text> */}
+                <Title label="Type" />
                 <Text style={styles.subHeading}>
                   {SHIPPING_TYPE[item?.shipping_type - 1]}
                 </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Date: </Text>
+                {/* <Text style={styles.heading}>Date: </Text> */}
+                <Title label="Date" />
                 <Text style={styles.subHeading}>
                   {item?.created_at ? normalizeDate(item?.created_at) : ''}
                 </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Country: </Text>
+                {/* <Text style={styles.heading}>Country: </Text> */}
+                <Title label="Country" />
                 <Text style={styles.subHeading}>{item?.origin_country}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Delivery Address: </Text>
+                {/* <Text style={styles.heading}>Delivery Address: </Text> */}
+                <Title label="Delivery Address" />
                 <Text style={styles.subHeading}>{item?.address}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>
+                {/* <Text style={styles.heading}>
                   Shipped Cost ({currencyRate?.currency_code}):{' '}
-                </Text>
+                </Text> */}
+                <Title
+                  label={`Shipped Cost (${currencyRate?.currency_code})`}
+                />
                 <Text style={styles.cost}>
                   {getPriceByRate(
                     item?.total_cost,
@@ -126,7 +134,8 @@ const Shipments = () => {
                 </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Status: </Text>
+                {/* <Text style={styles.heading}>Status: </Text> */}
+                <Title label="Status" />
                 <TextHighlight>
                   {SHIPPING_STATUS[item?.shipping_status]}
                 </TextHighlight>
@@ -184,7 +193,8 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '60%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',
@@ -213,14 +223,15 @@ const styles = StyleSheet.create({
   },
   newShipmentText: {
     width: '100%',
-    fontSize: 11,
+    fontSize: 10,
     color: '#fff',
     textAlign: 'center'
   },
   cost: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3699ff'
+    color: '#3699ff',
+    marginLeft: 10
   }
 });
 

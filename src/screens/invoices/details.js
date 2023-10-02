@@ -10,7 +10,14 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Button, Text, SearchBar, TextHighlight, Header } from 'src/components';
+import {
+  Button,
+  Text,
+  SearchBar,
+  TextHighlight,
+  Header,
+  Title
+} from 'src/components';
 import {
   viewBuyForMe,
   viewInvoice,
@@ -49,27 +56,32 @@ const InvoicesDetails = () => {
       <View style={styles.container}>
         <View style={[styles.card, { marginBottom: 10 }]}>
           <View style={styles.row}>
-            <Text style={styles.heading}>Date: </Text>
+            {/* <Text style={styles.heading}>Date: </Text> */}
+            <Title label="Date" />
             <Text style={styles.subHeading}>
               {normalizeDate(item?.created_at)}
             </Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Title: </Text>
+            {/* <Text style={styles.heading}>Title: </Text> */}
+            <Title label="Title" />
             <Text style={styles.subHeading}>{item?.title}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>
+            {/* <Text style={styles.heading}>
               {`Amount (${currencyRate?.currency_code}):`}{' '}
-            </Text>
+            </Text> */}
+            <Title label={`Amount (${currencyRate?.currency_code}):`} />
             <Text style={styles.subHeading}>{item?.amount}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Attachment: </Text>
+            {/* <Text style={styles.heading}>Attachment: </Text> */}
+            <Title label="Attachment" />
             <Text style={styles.cost}>{item?.attachments ? 'Yes' : 'No'}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.heading}>Status: </Text>
+            {/* <Text style={styles.heading}>Status: </Text> */}
+            <Title label="Status" />
             <TextHighlight error={PAYMENT_STATUS[item?.payment_status]}>
               {PAYMENT_STATUS[item?.payment_status]}
             </TextHighlight>
@@ -120,7 +132,8 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '60%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',

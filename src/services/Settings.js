@@ -4,7 +4,15 @@ export const settings = {
   auth: {
     login:
       'https://www.ushopus.com/enviorment/login?email=$[email]&password=$[password]',
-    changePassword: '/change-password/update'
+    register:
+      'https://ushopus.com/register/store?email=$[email]&password=$[password]&name=$[name]&gender=$[gender]&lscode=$[lscode]&phone=$[phone]&street_address=$[street_address]&state=$[state]&city=$[city]&postal_code=$[postal_code]&business_country=$[business_country]&ref=app&password_confirmation=$[password_confirmation]',
+    changePassword: '/change-password/update',
+    preferences: '/preference?token=$[token]',
+    updatePreferences:
+      '/preference/update?token=$[token]&language=$[language]&country=$[country]&currency=$[currency]'
+  },
+  dashboard: {
+    dashboard: '/dashboard?token=$[token]'
   },
   upload: {
     upload: '/upload?token=$[token]'
@@ -61,7 +69,7 @@ export const settings = {
     supportTickets: '/all-support-tickets/show?token=$[token]',
     create: '/create-support-ticket/store?token=$[token]',
     edit: '/edit-ticket/store?token=$[token]',
-    view: 'support-ticket/view/$[id]?token=$[token]'
+    view: '/support-ticket/view/$[id]?token=$[token]'
   },
   coupons: {
     redeem: '/redeem-coupon?token=$[token]'

@@ -18,7 +18,8 @@ import {
   Text,
   SearchBar,
   TextHighlight,
-  ChangeCountry
+  ChangeCountry,
+  Title
 } from 'src/components';
 import { supportTicketsList } from 'src/services/api/ApiManager';
 import { normalizeDate } from 'src/services/constants';
@@ -82,29 +83,39 @@ const SupportTickets = () => {
           style={styles.flatlist}
           nestedScrollEnabled
           renderItem={({ item, index }) => (
-            <View style={styles.card}>
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() =>
+                navigation.navigate('TicketDetails', {
+                  id: item.id
+                })
+              }>
               <View style={styles.row}>
-                <Text style={styles.heading}>Ticket ID: </Text>
+                {/* <Text style={styles.heading}>Ticket ID: </Text> */}
+                <Title label="Ticket ID" />
                 <Text style={styles.subHeading}>{item?.id}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Subject: </Text>
+                {/* <Text style={styles.heading}>Subject: </Text> */}
+                <Title label="Subject" />
                 <Text style={styles.subHeading}>{item?.subject}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Status: </Text>
+                {/* <Text style={styles.heading}>Status: </Text> */}
+                <Title label="Status" />
                 <TextHighlight
                   error={TICKET_STATUS[item?.status] !== 'Resolved'}>
                   {TICKET_STATUS[item?.status]}
                 </TextHighlight>
               </View>
               <View style={styles.row}>
-                <Text style={styles.heading}>Date: </Text>
+                {/* <Text style={styles.heading}>Date: </Text> */}
+                <Title label="Date" />
                 <Text style={styles.subHeading}>
                   {normalizeDate(item?.created_at)}
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
       </ScrollView>
@@ -151,7 +162,8 @@ const styles = StyleSheet.create({
   },
   subHeading: {
     fontSize: 14,
-    width: '60%'
+    width: '60%',
+    marginLeft: 10
   },
   row: {
     flexDirection: 'row',
@@ -162,7 +174,8 @@ const styles = StyleSheet.create({
   cost: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3699ff'
+    color: '#3699ff',
+    marginLeft: 10
   }
 });
 

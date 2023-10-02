@@ -79,9 +79,7 @@ const CreateOrder = ({ route }) => {
       product_detail: details,
       notes: state.note
     };
-    console.log('order', order);
     const res = await createBuyForMe(accessToken, order);
-    console.log(res);
     if (res && res.data && res.data.data) {
       Alert.alert('Order successfully created', `${res.data.message}`);
       navigation.navigate('BuyForMe');

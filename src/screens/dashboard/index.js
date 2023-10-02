@@ -1,36 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  Image,
-  ImageBackground,
-  Platform,
-  TouchableOpacity
-} from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { StyleSheet, View } from 'react-native';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from 'src/services/state/State';
-import { Button, Text, Header, ChangeCountry } from 'src/components';
-import { formatPhoneNumber } from 'src/services/DataManager';
-import { getCountries } from 'src/services/api/ApiManager';
+import {
+  Button,
+  Text,
+  Header,
+  ChangeCountry,
+  TextHighlight
+} from 'src/components';
+import { getCountries, getDashboardDetails } from 'src/services/api/ApiManager';
 import { actions } from 'src/services/state/Reducer';
-import { stateFreeAddress } from 'src/services/constants';
+import {
+  getDay,
+  humanDifferenceDate,
+  stateFreeAddress
+} from 'src/services/constants';
+import { TICKET_STATUS } from 'src/services/enums';
 
 const Dashboard = () => {
   const navigation = useNavigation();
-  const [{ currentUser, accessToken, shop }, dispatch] = useStateValue();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [{ currentUser, accessToken, shop, currencyRate, shops }, dispatch] =
+    useStateValue();
   const [loading, setLoading] = useState(false);
+  const [tickets, setTickets] = useState([]);
+  const [dashboardDetails, setDashboardDetails] = useState(null);
 
   const fetchCountries = async () => {
     const res = await getCountries(accessToken);
     if (res && res.data) {
       dispatch({
         type: actions.SET_CURRENCY_RATE,
-        payload: res?.data?.find(c => c.id === currentUser?.currency)
+        payload: res?.data?.find(
+          c => c.id === parseInt(currentUser?.currency, 0)
+        )
       });
       dispatch({
         type: actions.SET_COUNTRIES,
@@ -39,12 +46,43 @@ const Dashboard = () => {
     }
   };
 
+  const handleGetDashboardDetails = async () => {
+    setLoading(true);
+    const response = await getDashboardDetails(accessToken);
+    if (response.status === 200) {
+      setDashboardDetails(response?.data);
+      setTickets(response?.data?.tickets);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    handleGetDashboardDetails();
+  }, [shop]);
+
   useEffect(() => {
     fetchCountries();
   }, []);
-  console.log('currentUser', currentUser);
-  console.log('shop', shop);
+
+  const replaceSpanWithTextComponent = string => {
+    const regex = /<span[^>]*>([^<]*)<\/span>/g;
+    // replace span with Text component
+    const replacedString = string.replace(regex, (match, group) => group);
+    const arr = replacedString.split('$');
+    const newArr = arr[1]?.split(' ');
+    const amount = `$${newArr?.[0] || 0}`;
+    newArr?.shift();
+    const res = {
+      preText: arr[0] || '',
+      postText: newArr?.join(' ') || '',
+      amount
+    };
+    return res;
+  };
+
   const address = stateFreeAddress?.find(item => item.code === shop);
+  const currentShopName =
+    shops?.find(item => item?.country?.code === shop)?.country?.name || '';
 
   return (
     <>
@@ -54,10 +92,10 @@ const Dashboard = () => {
         contentContainerStyle={styles.contentContainer}>
         <ChangeCountry />
         <View style={styles.info}>
-          <Text style={styles.heading}>State Tax Free Address</Text>
+          <Text style={styles.heading}>{address?.title}</Text>
           <Text style={styles.text}>
             {`You can use the following details if you want to purchase the items from the ${
-              shop || 'USA'
+              currentShopName || 'United States'
             } & we will do the shipping for you.`}
           </Text>
           <Text style={styles.subHeading}>Name</Text>
@@ -98,7 +136,9 @@ const Dashboard = () => {
                 size={35}
                 style={{ marginTop: -8 }}
               />
-              <Text style={styles.pendingText}>0 USD Pending</Text>
+              <Text style={styles.pendingText}>{`${
+                dashboardDetails?.pending?.toFixed(2) || 0
+              } ${currencyRate?.currency_code} Pending`}</Text>
             </View>
             <View style={styles.paid}>
               <View style={styles.paidIcon}>
@@ -114,14 +154,60 @@ const Dashboard = () => {
                 size={25}
                 style={styles.overlapIcon}
               />
-              <Text style={styles.paidText}>0 USD Paid</Text>
+              <Text style={styles.paidText}>{`${
+                dashboardDetails?.paid?.toFixed(2) || 0
+              } ${currencyRate?.currency_code} Paid`}</Text>
             </View>
           </View>
         </View>
         <View style={styles.activites}>
-          <Text style={[styles.heading, { color: '#000' }]}>
+          <Text style={[styles.heading, { color: '#000', marginBottom: 20 }]}>
             Recent Activites
           </Text>
+          <FlatList
+            data={dashboardDetails?.activities}
+            style={styles.flatlist}
+            nestedScrollEnabled
+            renderItem={({ item, index }) => {
+              const message = replaceSpanWithTextComponent(item?.description);
+              return (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    width: '100%',
+                    alignItems: 'flex-start',
+                    height: 50
+                  }}>
+                  <View style={{ width: '20%' }}>
+                    <Text style={[styles.ticketHeading, { marginTop: 0 }]}>
+                      {getDay(item?.created_at)}
+                    </Text>
+                  </View>
+                  <Feather
+                    name="circle"
+                    size={20}
+                    color={item?.type === 'danger' ? '#f64e60' : '#ffa800'}
+                    style={{ width: '10%' }}
+                  />
+                  <View style={{ width: '70%' }}>
+                    <Text style={{ color: '#3f4254' }}>
+                      {message?.preText}{' '}
+                      {message?.postText && (
+                        <Text
+                          style={{
+                            color:
+                              item?.type === 'danger' ? '#f64e60' : '#ffa800'
+                          }}>
+                          {message?.amount}
+                        </Text>
+                      )}
+                      {' ' + message?.postText || ''}
+                    </Text>
+                  </View>
+                </View>
+              );
+            }}
+          />
         </View>
         <View style={styles.tickets}>
           <View style={styles.headerRow}>
@@ -134,7 +220,38 @@ const Dashboard = () => {
               onPress={() => navigation.navigate('CreateTicket')}
             />
           </View>
-          <Text style={styles.footer}>No tickets has been created yet.</Text>
+          {tickets?.length > 0 && (
+            <FlatList
+              data={tickets}
+              style={styles.flatlist}
+              nestedScrollEnabled
+              renderItem={({ item, index }) => (
+                <View style={styles.card}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      width: '100%',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}>
+                    <View style={{ width: '60%' }}>
+                      <Text style={styles.ticketHeading}>{item?.subject}</Text>
+                      <Text style={styles.ticketSubHeading}>
+                        {humanDifferenceDate(item?.created_at)}
+                      </Text>
+                    </View>
+                    <TextHighlight
+                      error={TICKET_STATUS[item?.status] !== 'Resolved'}>
+                      {TICKET_STATUS[item?.status]}
+                    </TextHighlight>
+                  </View>
+                </View>
+              )}
+            />
+          )}
+          {tickets?.length === 0 && (
+            <Text style={styles.footer}>No tickets has been created yet.</Text>
+          )}
         </View>
       </ScrollView>
     </>
@@ -228,6 +345,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '500',
     marginTop: 15
+  },
+  ticketHeading: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginTop: 10
+  },
+  ticketSubHeading: {
+    fontSize: 14,
+    marginTop: 5
   },
   text: {
     fontSize: 14,

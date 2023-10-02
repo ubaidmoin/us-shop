@@ -17,13 +17,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#c9f7f5',
     borderRadius: 5,
     paddingVertical: 2,
-    paddingHorizontal: 5
+    paddingHorizontal: 5,
+    maxWidth: '60%',
+    marginLeft: 10
   },
   error: {
     backgroundColor: '#ffe2e4',
     borderRadius: 5,
     paddingVertical: 2,
-    paddingHorizontal: 5
+    paddingHorizontal: 5,
+    maxWidth: '60%',
+    marginLeft: 10
   },
   successText: {
     fontFamily: 'Poppins-Regular',

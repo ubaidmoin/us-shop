@@ -1,6 +1,10 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Shipments, CreateShipment } from 'src/screens';
+import {
+  Shipments,
+  CreateShipment,
+  TermsAndConditionsStackScreen
+} from 'src/screens';
 
 const Stack = createStackNavigator();
 
@@ -15,6 +19,11 @@ const Navigator = () => {
       <Stack.Screen
         name="CreateShipment"
         component={CreateShipment}
+        options={{ header: () => null }}
+      />
+      <Stack.Screen
+        name="TermsAndConditionsStackScreen"
+        component={TermsAndConditionsStackScreen}
         options={{ header: () => null }}
       />
     </Stack.Navigator>
